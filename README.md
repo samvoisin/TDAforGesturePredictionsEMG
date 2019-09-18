@@ -1,3 +1,5 @@
+#Topological Data Analysis Techniques for Gesture Prediction
+
 This research project seeks to use methods derived from topology to filter sEMG signals to improve predictive power for hand gestures.
 
 Specifically, the aim of this project is to utilize topological and geometric methods for filtering surface Electromyography ("sEMG") signals derived from participants. These filtered signals will then be used in predicting the gestures a user is performing.
