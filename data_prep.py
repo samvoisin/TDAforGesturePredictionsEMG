@@ -72,9 +72,9 @@ def build_new_ref(to_dir, sn, orig_file, g, ct):
     ct - counter for files w/ similar names (e.g. gesture 2, 0 & 1)
     """
     if orig_file.startswith("1"):
-        new_ref = to_dir + sn + "/1/" + g + "_" + ct
+        new_ref = to_dir + sn + "/1/" + str(g) + "_" + str(ct) + ".csv"
     else:
-        new_ref = to_dir + sn + "/2/" + g + "_" + ct
+        new_ref = to_dir + sn + "/2/" + str(g) + "_" + str(ct) + ".csv"
     return new_ref
 
 ### script body
@@ -87,7 +87,7 @@ subj_data = {n : os.listdir(raw_dir + n) for n in subj_nums}
 # define new file path and create new directory structure
 to_dir = "./Data/EMG_data_for_gestures-cleaned/"
 for n in subj_nums:
-    os.makedirs(to_dir + n) # create new dir
+    os.makedirs(to_dir + n, exist_ok = True) # create new dir
 
 # generate new data files
 for n, v in subj_data.items():
@@ -98,6 +98,9 @@ for n, v in subj_data.items():
         for g, d in cln_gests.items():
             ct = 0 # counter for new file names
             ### need another level here for d - see jupyter notebook
-            clean_ref = build_new_ref(to_dir, n, v[o_f], g, ct)
+            for df in d:
+                clean_ref = build_new_ref(to_dir, n, v[o_f], g, ct)
+                df.to_csv(clean_ref, index = False)
+                ct += 1
 
 
