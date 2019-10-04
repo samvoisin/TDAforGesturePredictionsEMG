@@ -72,9 +72,9 @@ def build_new_ref(to_dir, sn, orig_file, g, ct):
     ct - counter for files w/ similar names (e.g. gesture 2, 0 & 1)
     """
     if orig_file.startswith("1"):
-        new_ref = to_dir + sn + "/1/" + str(g) + "_" + str(ct) + ".csv"
+        new_ref = to_dir + sn + "/1_" + str(g) + "_" + str(ct) + ".csv"
     else:
-        new_ref = to_dir + sn + "/2/" + str(g) + "_" + str(ct) + ".csv"
+        new_ref = to_dir + sn + "/2_" + str(g) + "_" + str(ct) + ".csv"
     return new_ref
 
 ### script body
@@ -91,14 +91,15 @@ for n in subj_nums:
 
 # generate new data files
 for n, v in subj_data.items():
+    print(f"Subject number {n}")
     # origin file 1 or 2 for each subject
     for o_f in (0, 1):
         cln_gests = gest_dict(raw_dir + n + "/" + v[o_f])
         # parse data file seperating frames and saving them to new dir
         for g, d in cln_gests.items():
             ct = 0 # counter for new file names
-            ### need another level here for d - see jupyter notebook
-            for df in d:
+            # save data frames found in dictionary d
+            for df in d.values():
                 clean_ref = build_new_ref(to_dir, n, v[o_f], g, ct)
                 df.to_csv(clean_ref, index = False)
                 ct += 1
