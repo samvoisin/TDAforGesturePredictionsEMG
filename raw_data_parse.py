@@ -85,7 +85,7 @@ subj_nums = os.listdir(raw_dir)
 subj_data = {n : os.listdir(raw_dir + n) for n in subj_nums}
 
 # define new file path and create new directory structure
-to_dir = "./Data/EMG_data_for_gestures-cleaned/"
+to_dir = "./Data/EMG_data_for_gestures-parsed/"
 for n in subj_nums:
     os.makedirs(to_dir + n, exist_ok = True) # create new dir
 
