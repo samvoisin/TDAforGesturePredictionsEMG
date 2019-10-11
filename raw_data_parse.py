@@ -101,7 +101,7 @@ for n, v in subj_data.items():
             # save data frames found in dictionary d
             for df in d.values():
                 clean_ref = build_new_ref(to_dir, n, v[o_f], g, ct)
-                df.to_csv(clean_ref, index = False)
+                df.to_csv(clean_ref, index = False, sep = ",")
                 ct += 1
 
 
