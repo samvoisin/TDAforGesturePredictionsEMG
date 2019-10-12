@@ -47,7 +47,7 @@ def gest_dict(filepath):
         # split single gesture df into iterations of gesture g
         brk_pts = find_break_pts(df[df.gesture == g])
         gd = dict() # store sub-dfs created by breaks
-        trail = 0 
+        trail = 0
         for n, b in enumerate(brk_pts):
             if g == 0:
                 # treat gest == 0 seperately
@@ -60,21 +60,21 @@ def gest_dict(filepath):
                 gd[0] = zero_time(df[df.gesture == g].iloc[:b])
                 gd[1] = zero_time(df[df.gesture == g].iloc[b+1:])
             all_gst[g] = gd
-    
+
     return all_gst
 
 def build_new_ref(to_dir, sn, orig_file, g, ct):
     """build a new file path based on attributes of data to be saved; naming convention:
     to_dir - top level dir for cleaned data
     sn - subject number
-    orig_file - file name with raw data; 2 per subject
     g - gesture number
     ct - counter for files w/ similar names (e.g. gesture 2, 0 & 1)
+    orig_file - file name with raw data; 2 per subject
     """
     if orig_file.startswith("1"):
-        new_ref = to_dir + sn + "/1_" + str(g) + "_" + str(ct) + ".csv"
+        new_ref = to_dir + sn + "/" + str(g) + "_" + str(ct) + "_1.csv"
     else:
-        new_ref = to_dir + sn + "/2_" + str(g) + "_" + str(ct) + ".csv"
+        new_ref = to_dir + sn + "/" + str(g) + "_" + str(ct) + "_2.csv"
     return new_ref
 
 ### script body
