@@ -1,0 +1,68 @@
+\documentclass[11pt]{article}
+\setlength{\textwidth}{6.3in}
+\setlength{\textheight}{9in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\topmargin}{-.6in}
+\linespread{1.3}
+
+% \renewcommand{\labelenumi}{\alph{enumi}}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\newcommand{\spacer}{\displaystyle{\phantom{\int}}}
+\newcommand{\blank}[1]{\underline{\hspace{#1}}}
+\newcommand{\diff}[2]{\frac{d#1}{d#2}}
+\newcommand{\difftwo}[2]{\frac{d^2#1}{d{#2}^2}}
+\newcommand\dd[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newenvironment{piecewise}{\left\{\begin{array}{l@{,\quad}l}}{\end{array}\right.}
+\newcommand{\col}[3]{\begin{bmatrix} #1 \\ #2 \\ #3 \end{bmatrix}}
+\newcommand{\coll}[4]{\begin{bmatrix} #1 \\ #2 \\ #3 \\ #4\end{bmatrix}}
+\newcommand{\points}[1]{({\it #1 points})}
+\def\dx{\Delta x}
+\def\dsst{\displaystyle}
+\hyphenation{}
+
+\begin{document}
+\noindent \textbf{Sam Voisin \hfill  \textbf{Thesis Proposal}  \hfill  October 15th, 2019} \\
+\line(1,0){455}
+
+\begin{center}
+\Large{{\bf Utilizing Persistent Homology for Gesture Recognition}}\\
+\end{center}
+
+Applications of machine learning and signals processing techniques to human-computer interface ("HCI") problems have seen a significant rise in interest in the past decade. In particular, the problem of identifying hand and wrist gestures via electromyography ("EMG") sensors has become popular enough that several datasets of recorded signals and subject characteristics have been generated and published \cite{ninapro} \cite{lobov}.
+
+Electromyography is a method by which electrical impulses produced by muscles can be recorded. \emph{Surface} electromyographs ("sEMG") are sensor devices capable of recording these electrical impulses on the surface of the skin as opposed to their intramuscular counterparts. A drawback to surface EMGs is the effect of personal characteristics such as perspiration, amount of subcutaneous body-fat, and jostling or shifting of the sensor array \cite{lobov}.
+
+The primary goal of researchers in this area has been to improve upon non-invasive, robotic prosthetic hands and forearms. Researchers have seen success in gesture classification using EMG sensor data through a variety of means \cite{state}. However, methods employed for this task face two notable considerations: the first of these is computational cost - processors and memory may be restricted to what can be embedded onboard a prosthetic. The second consideration is the amount and availability of training data required to achieve satistfactory results without overfitting \cite{bigdata}. The artificial neural network ("ANN") is a prime example of a high-performing algorithm in this space that is subject to these constraints.
+
+The intention of this research project is to develop a data pipeline consisting of a feature extraction step and a subsequent gesture classification step capable of addressing these constraints. Ideally this pipeline will be capable of operating on streaming data as would be encountered by a prosthetic device or other HCI while in use.
+
+START HERE
+
+Once relevant features of the sample space have been identified, various modeling techniques will be performed with the goal of precisely predicting the gesture being made. The first techniques used for these predictions will revolve around applications of self-similarity matrices [3].
+
+A sensitivity analysis of predictive accuracy will be performed in which the "window" over the modalities used for gesture recognition will shrink towards time $0$. That is, if $t_0$ is the moment at which the subject begins making the gesture, and $t_n$ is the moment at which the subject finishes making the gesture, then the window over the modalities will progressively shrink from $[t_0, t_n]$ to $[t_0, t_{n-1}]$ to $[t_0, t_{n-2}]$ and so on. The intention of this sensitivity analysis is to develop an understanding of the earliest point at which a reliable prediction of the gesture can be made.
+\begin{center}
+\noindent\rule{16cm}{0.4pt}
+\end{center}
+
+
+\begin{thebibliography}{5}
+
+\bibitem{ninapro} Atzori, M.et al.Electromyography data for non-invasive naturally-controlledrobotic hand prostheses.Sci. Data1:140053 doi: 10.1038/sdata.2014.53 (2014).
+
+\bibitem{lobov} Lobov, Sergey, et al. “Latent Factors Limiting the Performance of sEMG-Interfaces.” Sensors, vol. 18, no. 4, June 2018, p. 1122., doi:10.3390/s18041122.
+
+\bibitem{state} Peerdeman  B,  Boere  D,  Witteveen  H,  Huis  in  ‘t  Veld  R,  Hermens H, Stramigioli S, Rietman H, Veltink P, Misra S. Myoelectric  forearm  prostheses:  State  of  the  art  from  a  user-centered perspective. J Rehabil Res Dev. 2011;48(6): 719–38.DOI:10.1682/JRRD.2010.08.016
+
+\bibitem{bigdata} Phinyomark, A.; Scheme, E. EMG Pattern Recognition in the Era of Big Data and Deep Learning. Big Data Cogn. Comput. 2018, 2, 21. 
+
+\bibitem{ssm} Tralie, Bendich, \& Harer. “Multi-Scale Geometric Summaries for Similarity-Based Sensor Fusion.” 2019 IEEE Aerospace Conference, 2019, doi:10.1109/aero.2019.8741399.
+
+\end{thebibliography}
+  
+\end{document}
