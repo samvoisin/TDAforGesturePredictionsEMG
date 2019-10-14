@@ -30,7 +30,7 @@
 \line(1,0){455}
 
 \begin{center}
-\Large{{\bf Utilizing Persistent Homology for Gesture Recognition}}\\
+\Large{{\bf Geometric and Topological Approaches to Addressing Two Gesture Recognition Concerns}}\\
 \end{center}
 
 Applications of machine learning and signals processing techniques to human-computer interface ("HCI") problems have seen a significant rise in interest in the past decade. In particular, the problem of identifying hand and wrist gestures via electromyography ("EMG") sensors has become popular enough that several datasets of recorded signals and subject characteristics have been generated and published \cite{ninapro} \cite{lobov}.
@@ -39,13 +39,14 @@ Electromyography is a method by which electrical impulses produced by muscles ca
 
 The primary goal of researchers in this area has been to improve upon non-invasive, robotic prosthetic hands and forearms. Researchers have seen success in gesture classification using EMG sensor data through a variety of means \cite{state}. However, methods employed for this task face two notable considerations: the first of these is computational cost - processors and memory may be restricted to what can be embedded onboard a prosthetic. The second consideration is the amount and availability of training data required to achieve satistfactory results without overfitting \cite{bigdata}. The artificial neural network ("ANN") is a prime example of a high-performing algorithm in this space that is subject to these constraints.
 
-The intention of this research project is to develop a data pipeline consisting of a feature extraction step and a subsequent gesture classification step capable of addressing these constraints. Ideally this pipeline will be capable of operating on streaming data as would be encountered by a prosthetic device or other HCI while in use.
+This second consideration regarding training data contains some subtleties worth noting. Although there are a number of publicly available databases for sEMG training data, it is usually not possible to combine this data for training a single model. As described by Phinyomark \cite{bigdata}, this is due to the measurements being taken in different manners using equipment differing equipment quality.
 
-START HERE
+The intention of this research project is to develop a data pipeline consisting of a feature extraction step and a subsequent gesture classification step capable of addressing these constraints. Ideally this pipeline will be capable of operating on streaming data as would be encountered by a prosthetic device or other HCI devices while in use. This hypothetical pipeline would address the concerns described above as follows.
 
-Once relevant features of the sample space have been identified, various modeling techniques will be performed with the goal of precisely predicting the gesture being made. The first techniques used for these predictions will revolve around applications of self-similarity matrices [3].
+Methods from topological data analysis will be utilized for feature extraction. Specifically the persistence of topological features in the set of sEMG modalities will be examined independently as well as jointly with the intention of developing a smoothing mechanism for removing variance due to personal characteristics described by Lobov, \emph{et al} \cite{lobov}. Topological methods are rarely - if at all - utilized in the problem of gesture identification with most researchers opting for more traditional methods for smoothing EMG signals (e.g. moving averages, RMS, etc.) \cite{state}.
 
-A sensitivity analysis of predictive accuracy will be performed in which the "window" over the modalities used for gesture recognition will shrink towards time $0$. That is, if $t_0$ is the moment at which the subject begins making the gesture, and $t_n$ is the moment at which the subject finishes making the gesture, then the window over the modalities will progressively shrink from $[t_0, t_n]$ to $[t_0, t_{n-1}]$ to $[t_0, t_{n-2}]$ and so on. The intention of this sensitivity analysis is to develop an understanding of the earliest point at which a reliable prediction of the gesture can be made.
+The second step in the pipeline is a general classifier capable of reliably differentiating gestures with some degree of invariance to the format of training data. The technique of self-similarity matrices ("SSM") described by Traile, Bendich, and Harer may be used for this task wtih some modification\cite{ssm}. A Bayesian imputation approach for fusing data sets \cite{bayesfuse} may also be utilized for addressing concerns about training data availability pending the results of the SSM approach.
+
 \begin{center}
 \noindent\rule{16cm}{0.4pt}
 \end{center}
@@ -57,11 +58,13 @@ A sensitivity analysis of predictive accuracy will be performed in which the "wi
 
 \bibitem{lobov} Lobov, Sergey, et al. “Latent Factors Limiting the Performance of sEMG-Interfaces.” Sensors, vol. 18, no. 4, June 2018, p. 1122., doi:10.3390/s18041122.
 
-\bibitem{state} Peerdeman  B,  Boere  D,  Witteveen  H,  Huis  in  ‘t  Veld  R,  Hermens H, Stramigioli S, Rietman H, Veltink P, Misra S. Myoelectric  forearm  prostheses:  State  of  the  art  from  a  user-centered perspective. J Rehabil Res Dev. 2011;48(6): 719–38.DOI:10.1682/JRRD.2010.08.016
+\bibitem{state} Peerdeman  B,  Boere  D,  Witteveen  H,  Huis  in  ‘t  Veld  R,  Hermens H, Stramigioli S, Rietman H, Veltink P, Misra S. Myoelectric  forearm  prostheses:  State  of  the  art  from  a  user-centered perspective. J Rehabil Res Dev. 2011;48(6): 719–38. DOI:10.1682/JRRD.2010.08.016
 
 \bibitem{bigdata} Phinyomark, A.; Scheme, E. EMG Pattern Recognition in the Era of Big Data and Deep Learning. Big Data Cogn. Comput. 2018, 2, 21. 
 
 \bibitem{ssm} Tralie, Bendich, \& Harer. “Multi-Scale Geometric Summaries for Similarity-Based Sensor Fusion.” 2019 IEEE Aerospace Conference, 2019, doi:10.1109/aero.2019.8741399.
+
+\bibitem{bayesfuse} Reiter, Jerome P. “Bayesian Finite Population Imputation for Data Fusion.” Statistica Sinica, vol. 22, no. 2, 2012, doi:10.5705/ss.2010.140.
 
 \end{thebibliography}
   
