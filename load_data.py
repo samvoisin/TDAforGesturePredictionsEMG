@@ -29,7 +29,7 @@ def load_data(subjects = "all", gestures = "all", dataset = "parsed"):
         gests = gestures
 
     dat = {}
-    # generate data sict subject : {gesture : array}
+    # generate data dict subject : {gesture : array}
     for s in subjs:
         dat[s] = {}
         dir_root = subj_lvl_dir + s + "/"
@@ -41,3 +41,9 @@ def load_data(subjects = "all", gestures = "all", dataset = "parsed"):
 
     return dat
 
+
+
+if __name__ == "__main__":
+    load_data()
+
+    

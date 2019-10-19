@@ -105,3 +105,5 @@ for n, v in subj_data.items():
                 ct += 1
 
 
+if __name__ == "__main__":
+    build_new_ref()
