@@ -1,4 +1,4 @@
-#Topological Data Analysis Techniques for Gesture Prediction
+# Topological Data Analysis Techniques for Gesture Prediction
 
 This research project seeks to use methods derived from topology to filter sEMG signals to improve predictive power for hand gestures.
 
