@@ -7,18 +7,20 @@ import numpy as np
 import os
 
 
-def load_data(subjects = "all", gestures = "all", dataset = "parsed"):
+def load_data(subjects="all", gestures="all", dataset="parsed"):
     """load data set from master (i.e. raw) or parsed set
-    if subject number is specified [list type] load just that (those) subject(s)
-    if gesture is specified [list type] load just that (those) gesture number(s)"""
+    if subject number is specified [list type] load only that subject(s)
+    if gesture is specified [list type] load only that (those) gesture(s)"""
 
-    subj_lvl_dir = "./Data/EMG_data_for_gestures-" + dataset + "/"
+    subj_lvl_dir = "./Data/EMG_data_for_gestures-"+dataset+"/"
 
+    # specificy subjects
     if subjects == "all":
         subjs = os.listdir(subj_lvl_dir)
     else:
         subjs = subjects
 
+    # specificy gestures
     if gestures == "all":
         # does not include 0 gesture; must specify
         gests = ["1", "2", "3", "4", "5", "6"]
@@ -29,11 +31,12 @@ def load_data(subjects = "all", gestures = "all", dataset = "parsed"):
     # generate data dict subject : {gesture : array}
     for s in subjs:
         dat[s] = {}
-        dir_root = subj_lvl_dir + s + "/"
+        dir_root = subj_lvl_dir+s+"/"
         for f in os.listdir(dir_root):
             if f[0] in gests:
-                with open(dir_root + f, "r") as fh:
-                    dat[s][f[0:3]] = np.loadtxt(fh, delimiter = ",", skiprows = 1)
+                with open(dir_root+f, "r") as fh:
+                    # f[0:5] designates gest_performance(0 or 1)_file(1 or 2)
+                    dat[s][f[0:5]] = np.loadtxt(fh, delimiter=",", skiprows=1)
 
     return dat
 
@@ -59,6 +62,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
     # if one signal specified no subplots necessary
     if type(signals) == int or len(signals) == 1:
         plt.plot(subj_dict[subj][g][:, 0], subj_dict[subj][g][:, signals])
+        plt.title("Subject "+subj+"; Gesture "+g+"; Signal "+str(signals))
         return
 
     ### subplots code ###
@@ -70,9 +74,16 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
         fig, ax = plt.subplots(ncols=1, nrows=n_sig, sharex=True)
         clr = 0 # color and signal selector
         for n, i in enumerate(signals):
-            ax[n].plot(subj_dict[subj][g][:, 0], subj_dict[subj][g][:, i], color = colors[clr])
+            ax[n].set_title("Signal Number "+str(i))
+            ax[n].plot(
+                subj_dict[subj][g][:, 0],
+                subj_dict[subj][g][:, i],
+                color=colors[clr]
+                )
             clr += 1
-            if clr == n_sig: return
+            if clr == n_sig:
+                fig.suptitle("Subject "+subj+"; Gesture "+g)
+                return
 
 	# 5 or more signals gets 2 columns
     n_sbplts = n_sig
@@ -86,7 +97,11 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
     for i in range(n_r):
         for j in range(n_c):
             ax[i, j].set_title("Signal Number "+str(signals[clr]))
-            ax[i, j].plot(subj_dict[subj][g][:, 0], subj_dict[subj][g][:, signals[clr]], color = colors[clr])
+            ax[i, j].plot(
+                subj_dict[subj][g][:, 0],
+                subj_dict[subj][g][:, signals[clr]],
+                color=colors[clr]
+                )
             clr += 1
             if clr >= n_sig:
                 fig.suptitle("Subject "+subj+"; Gesture "+g)
@@ -98,7 +113,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
 
 if __name__ == "__main__":
     thrty=load_data(subjects=["30"])
-    plot_gests("30", "3_1", thrty, signals=[4,2,7,1,5])
+    plot_gests("30", "3_1_2", thrty, signals=[5, 3, 1])
 
 
 plt.show()
