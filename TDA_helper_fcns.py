@@ -51,6 +51,7 @@ def load_data(subjects="all", gestures="all", dataset="parsed"):
 
 def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
     """
+    Example input: plot_gests("30", "3_1_2", thrty, signals=[1, 2, 3, 5, 8])
     create plots of data for a given subject (subj) - type == str
     and gesture (g) - array in subject dict (e.g. (3_0, 3_1, 6_1. etc.))
     subj_dict is dictionary containing data from one more more subj (key == subj #)
@@ -121,9 +122,9 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
 
 
 
-def lower_star_time_series_dist(x):
+def sublevel_set_time_series_dist(x):
     """
-    Get lower star filtration for a time series
+    Get sublevel set filtration for a time series
     returns (n x n) sparse distance matrix
     x is a data array s.t. np.ndim(x) = 1
     sparse object imported from scipy
