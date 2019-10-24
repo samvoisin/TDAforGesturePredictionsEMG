@@ -13,12 +13,14 @@ from TDA_helper_fcns import load_data
 
 
 ### helper functions ###
-def plot_ts_pd(ts, pd, figsize=(12, 6)):
+def plot_ts_pd(ts, pd, figsize=(12, 6), save_img=False, path=None):
     """
     plot a time series and associated persistence diagram side by side
     ts - time series to be plotted; numpy array - col 0 is time; col 1 is data
     pd - a persistence diagram represented by an array; ripser object
     figsize - default size of plot figure
+    save_img - bool; indicate whether or not to save image file
+    path - where to save image file; defaults to working dir if None
     ----
     citation:
     https://ripser.scikit-tda.org/notebooks/Lower%20Star%20Time%20Series.html
@@ -51,7 +53,12 @@ def plot_ts_pd(ts, pd, figsize=(12, 6)):
     plot_diagrams(pd["dgms"][0], size=50)
     plt.title("Persistence Diagram")
 
-    plt.show()
+    if not save_img:
+        plt.show()
+    elif path is not None:
+        plt.savefig(path)
+    else:
+        plt.savefig(os.curdir + "/ts_pd.png")
 
 
 
