@@ -13,3 +13,5 @@ The data for this project was originally gathered through the study *Latent Fact
 Source data can be found here: https://archive.ics.uci.edu/ml/datasets/EMG+data+for+gestures
 
 
+To Do List:
+1) Create data set of persistence diagram vectors
