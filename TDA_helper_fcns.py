@@ -73,7 +73,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
         )
         plt.title("Subject "+subj+"; Gesture "+g+"; Signal "+str(signals))
         plt.xlabel("ms")
-        plt.ylabel("kHz")
+        plt.ylabel("Amplitude")
         return
 
     ### subplots code ###
@@ -125,12 +125,11 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
 def sublevel_set_time_series_dist(x):
     """
     Get sublevel set filtration for a time series
-    returns (n x n) sparse distance matrix
-    x is a data array s.t. np.ndim(x) = 1
-    sparse object imported from scipy
+    x - a numpy array s.t. np.ndim(x) = 1
+    returns (n x n) scipy.sparse distance matrix
     function adapted from scikit-tda tutorials:
     ----
-    citation:
+    code adapted from citation:
     https://ripser.scikit-tda.org/notebooks/Lower%20Star%20Time%20Series.html
     """
     n = x.size

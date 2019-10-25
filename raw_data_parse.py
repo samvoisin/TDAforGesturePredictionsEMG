@@ -11,7 +11,9 @@ import pandas as pd
 ### define helper functions
 
 def mod_col_names(full_frame):
-    """modify column names of full_frame prior to any other manipulation"""
+    """
+    modify column names of full_frame prior to any other manipulation
+    """
     # rename "time" variable to "time_ms"
     # rename "class" variable to "gesture"
     colnames = list(full_frame.columns)
@@ -21,7 +23,9 @@ def mod_col_names(full_frame):
     return full_frame
 
 def find_break_pts(gesture, t = 1000):
-    """find and return index for moments in df w/ > t ms between pt & nxt pt"""
+    """
+    find and return index for moments in df w/ > t ms between pt & nxt pt
+    """
     nrow = gesture.shape[0]
     brk_pts = [
         i-1 for i in range(2, nrow)
@@ -30,14 +34,18 @@ def find_break_pts(gesture, t = 1000):
     return brk_pts
 
 def zero_time(seg_df):
-    """take prev segmented DataFrame by gest; set time_ms to start at 0"""
+    """
+    take prev segmented DataFrame by gest; set time_ms to start at 0
+    """
     end_time = min(seg_df.time_ms)
     seg_df.time_ms = seg_df.time_ms - end_time
     return seg_df
 
 def gest_dict(filepath):
-    """return dict where key is gesture # and
-    value is indiv DataFrames for that gesture"""
+    """
+    return dict where key is gesture # and
+    value is indiv DataFrames for that gesture
+    """
     df = pd.read_table(filepath)
     df = mod_col_names(df)
     gests = df.gesture.unique()
@@ -64,7 +72,8 @@ def gest_dict(filepath):
     return all_gst
 
 def build_new_ref(to_dir, sn, orig_file, g, ct):
-    """build a new file path based on attributes of data to be saved;
+    """
+    build a new file path based on attributes of data to be saved;
     naming convention:
         to_dir - top level dir for cleaned data
         sn - subject number
