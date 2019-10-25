@@ -54,7 +54,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
     Example input: plot_gests("30", "3_1_2", thrty, signals=[1, 2, 3, 5, 8])
     create plots of data for a given subject (subj) - type == str
     and gesture (g) - array in subject dict (e.g. (3_0, 3_1, 6_1. etc.))
-    subj_dict is dictionary containing data from one more more subj (key == subj #)
+    subj_dict - dict containing data from one more more subj (key == subj #)
     signals - specify which signals; default is all
     save gestures to file path tbd
     """

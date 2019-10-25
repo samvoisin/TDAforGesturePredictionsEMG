@@ -64,12 +64,13 @@ def gest_dict(filepath):
     return all_gst
 
 def build_new_ref(to_dir, sn, orig_file, g, ct):
-    """build a new file path based on attributes of data to be saved; naming convention:
-    to_dir - top level dir for cleaned data
-    sn - subject number
-    g - gesture number
-    ct - counter for files w/ similar names (e.g. gesture 2, 0 & 1)
-    orig_file - file name with raw data; 2 per subject
+    """build a new file path based on attributes of data to be saved;
+    naming convention:
+        to_dir - top level dir for cleaned data
+        sn - subject number
+        g - gesture number
+        ct - counter for files w/ similar names (e.g. gesture 2, 0 & 1)
+        orig_file - file name with raw data; 2 per subject
     """
     if orig_file.startswith("1"):
         new_ref = to_dir + sn + "/" + str(g) + "_" + str(ct) + "_1.csv"
