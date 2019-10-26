@@ -18,15 +18,12 @@
 \newcommand{\difftwo}[2]{\frac{d^2#1}{d{#2}^2}}
 \newcommand\dd[2]{\frac{\partial{#1}}{\partial{#2}}}
 \newenvironment{piecewise}{\left\{\begin{array}{l@{,\quad}l}}{\end{array}\right.}
-\newcommand{\col}[3]{\begin{bmatrix} #1 \\ #2 \\ #3 \end{bmatrix}}
-\newcommand{\coll}[4]{\begin{bmatrix} #1 \\ #2 \\ #3 \\ #4\end{bmatrix}}
-\newcommand{\points}[1]{({\it #1 points})}
 \def\dx{\Delta x}
 \def\dsst{\displaystyle}
 \hyphenation{}
 
 \begin{document}
-\noindent \textbf{Sam Voisin \hfill  \textbf{Class Project}  \hfill  October 28th, 2019} \\
+\noindent \textbf{Sam Voisin \hfill  \textbf{Topological Data Analysis: Class Project}  \hfill  October 28, 2019} \\
 \line(1,0){455}
 
 \begin{center}
@@ -34,17 +31,23 @@
 \end{center}
 
 \begin{enumerate}
-\item Problem Description
+\item \textbf{Problem Description}
 
-\item Previous Work
+\item \textbf{Previous Work}
 
-The primary work that inspired this project is  \emph{Latent Factors Limiting the Performance of sEMG-Interfaces} by Lobov, et al. \cite{lobov} in which the goal is to control a pac-man style game using gestures. While the subjects were able to control the game character with some success using gestures, they performed the task far better when using a mouse or joystick. The research team preprocessed the sEMG training data using a root mean square (RMS) moving average for smoothing. They then trained both a linear discriminant analysis ("LDA") classifier and an artificial neural network ("ANN") classifier.
+The primary work that inspired this project is  \emph{Latent Factors Limiting the Performance of sEMG-Interfaces} by Lobov, \emph{et al.} \cite{lobov} in which the goal is to control a pac-man style game using gestures. While the subjects were able to control the game character with some success using gestures, they performed the task far better when using a mouse or joystick. The research team preprocessed the sEMG training data using a root mean square (RMS) moving average for smoothing. They employed both a linear discriminant analysis ("LDA") classifier and an artificial neural network ("ANN") classifier.
 
-\item Data
+\item \textbf{Data}
 
-\item Analysis Methods \& Pipeline
+The data set I will be using for this project is the \emph{EMG data for gestures Data Set} from the UCI Machine Learning Repository \cite{uci}. This data set was collected by Lobov, \emph{et al.} during the study described in the previous section.
 
-\item Risk Mitigation
+This data set consists of 36 subjects performing a series of six distinct gestures. Each subject performed their gestures four times for approximately three seconds per gesture. The motions were captured by a bracelet placed on the forearm and transmitted via Bluetooth to a PC where the data was recorded. The bracelet was equipped with 8 evenly spaced sEMG sensors. The result is a data set of approximately 864 matrices of size $t \times 10$ where $t$ represents elapsed time in milliseconds. The 10 columns of each matrix are time, sensor readings 1 - 8, and a gesture label.
+
+\item \textbf{Analysis Methods \& Pipeline}
+
+
+
+\item \textbf{Risk Mitigation}
 
 \end{enumerate}
 
@@ -78,6 +81,8 @@ The second step in the pipeline is a general classifier capable of reliably diff
 \bibitem{bigdata} Phinyomark, A.; Scheme, E. EMG Pattern Recognition in the Era of Big Data and Deep Learning. Big Data Cogn. Comput. 2018, 2, 21. 
 
 \bibitem{ssm} Tralie, Bendich, \& Harer. “Multi-Scale Geometric Summaries for Similarity-Based Sensor Fusion.” 2019 IEEE Aerospace Conference, 2019, doi:10.1109/aero.2019.8741399.
+
+\bibitem{uci} “EMG Data for Gestures Data Set.” UCI Machine Learning Repository: EMG Data for Gestures Data Set, https://archive.ics.uci.edu/ml/datasets/EMG data for gestures.
 
 \end{thebibliography}
   
