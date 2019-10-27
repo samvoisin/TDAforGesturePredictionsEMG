@@ -14,12 +14,8 @@
 \usepackage{tikz}
 \newcommand{\spacer}{\displaystyle{\phantom{\int}}}
 \newcommand{\blank}[1]{\underline{\hspace{#1}}}
-\newcommand{\diff}[2]{\frac{d#1}{d#2}}
-\newcommand{\difftwo}[2]{\frac{d^2#1}{d{#2}^2}}
-\newcommand\dd[2]{\frac{\partial{#1}}{\partial{#2}}}
 \newenvironment{piecewise}{\left\{\begin{array}{l@{,\quad}l}}{\end{array}\right.}
-\def\dx{\Delta x}
-\def\dsst{\displaystyle}
+\newcommand{\points}[1]{({\it #1 points})}
 \hyphenation{}
 
 \begin{document}
@@ -31,7 +27,29 @@
 \end{center}
 
 \begin{enumerate}
+\setlength{\parindent}{5ex}
+
 \item \textbf{Problem Description}
+
+\noindent
+\emph{Much of this section is adapted from my thesis proposal. It has been edited to fit within the scope of this class project.}
+
+Skeletal muscles produce electrical impulses when activated. These electrical impulses can be detected and recorded using an electromyograph. There are two primary varieties of electromyograph. The first requires hypodermic needles to be inserted in the area of study. The second version of the device is known as a \emph{Surface} electromyograph ("sEMG"). Surface electromyographs perform the same function but are less invasive at the cost of decreased precision. The quality of readings taken by surface electromyographs are known to be effected by personal characteristics such as perspiration, subcutaneous body-fat content, and jostling or shifting of the sensor array \cite{lobov}.
+
+As sEMG technology has become more available researchers have turned their attention to the information that might be available through these devices \cite{state}. In particular, the problem of classifying movements is now popular enough that several datasets of recorded signals and subject characteristics have been generated and published \cite{ninapro}.
+
+Researchers have been successful in gesture classification using EMG sensor data through a variety of means \cite{state}. However, methods employed for this task face two notable considerations:
+\begin{enumerate}
+\item[1)] Limited computational resources - processors and memory may be restricted to what can be embedded in a device.
+\item[2)] Availability of training data - The amount of training data required to achieve satistfactory results without overfitting is limited to  the quality and configuration of equipment of a single study. \cite{bigdata}
+\end{enumerate}
+
+The artificial neural network ("ANN") is a prime example of a high-performing algorithm that has performed will in-sample but does not generalize well due to these constraints.
+
+This project seeks determine whether or not it is possible to extract latent features common to various classes of gestures in a way that is invariant to minor differences in quality and configuration of sEMG sensors and superficial characteristics of the wearer. This is important because, if successful, a large amount of training data captured in differing studies can be generalized with minimal information loss. I believe this can be achieved using topological methods for feature selection.
+
+Persistence diagrams allow us to inform decisions about high-dimensional geometric properties of data without the information loss associated with other techniques for visualizing features (e.g. principle component analysis). Persistence images use a weighting function emphasize pertinent topological features of a signal and de-emphasize noise. This approach should outperform the typical moving average approach \cite{state} to preprocessing sEMG signals which "bake-in" signal noise and in some cases smooth over potentially important characteristics like medium-sized amplitudes.
+
 
 \item \textbf{Previous Work}
 
@@ -45,25 +63,20 @@ This data set consists of 36 subjects performing a series of six distinct gestur
 
 \item \textbf{Analysis Methods \& Pipeline}
 
+My goal is to develop a data pipeline that consists of a feature extraction component and gesture classification component.
+
+Methods from topological data analysis will be utilized for feature extraction.
+
+Specifically the persistence of topological features in the set of sEMG modalities will be examined independently as well as jointly with the intention of developing a smoothing mechanism for removing variance due to personal characteristics described by Lobov, \emph{et al.} \cite{lobov}. Topological methods are rarely - if at all - utilized in the problem of gesture identification with most researchers opting for more traditional methods for smoothing EMG signals (e.g. moving averages, RMS, etc.) \cite{state}.
+
+The second step in the pipeline is a general classifier capable of reliably differentiating gestures with some degree of invariance to the format of training data. The technique of self-similarity matrices ("SSM") described by Traile, Bendich, and Harer may be used for this task wtih some modification\cite{ssm}.
+
+\item \textbf{Software}
 
 
 \item \textbf{Risk Mitigation}
 
 \end{enumerate}
-
-Applications of machine learning and signals processing techniques to human-computer interface ("HCI") problems have seen a significant rise in interest in the past decade. In particular, the problem of identifying hand and wrist gestures via electromyography ("EMG") sensors has become popular enough that several datasets of recorded signals and subject characteristics have been generated and published \cite{ninapro} \cite{lobov}.
-
-Electromyography is a method by which electrical impulses produced by muscles can be recorded. \emph{Surface} electromyographs ("sEMG") are sensor devices capable of recording these electrical impulses on the surface of the skin as opposed to their intramuscular counterparts. A drawback to surface EMGs is the effect of personal characteristics such as perspiration, amount of subcutaneous body-fat, and jostling or shifting of the sensor array \cite{lobov}.
-
-The primary goal of researchers in this area has been to improve upon non-invasive, robotic prosthetic hands and forearms. Researchers have seen success in gesture classification using EMG sensor data through a variety of means \cite{state}. However, methods employed for this task face two notable considerations: the first of these is computational cost - processors and memory may be restricted to what can be embedded onboard a prosthetic. The second consideration is the amount and availability of training data required to achieve satistfactory results without overfitting \cite{bigdata}. The artificial neural network ("ANN") is a prime example of a high-performing algorithm in this space that is subject to these constraints.
-
-This second consideration regarding training data contains some subtleties worth noting. Although there are a number of publicly available databases for sEMG training data, it is usually not possible to combine this data for training a single model. As described by Phinyomark \cite{bigdata}, this is due to the measurements being taken in different manners using equipment differing equipment quality.
-
-The intention of this research project is to develop a data pipeline consisting of a feature extraction step and a subsequent gesture classification step capable of addressing these constraints. Ideally this pipeline will be capable of operating on streaming data as would be encountered by a prosthetic device or other HCI devices while in use. This hypothetical pipeline would address the concerns described above as follows.
-
-Methods from topological data analysis will be utilized for feature extraction. Specifically the persistence of topological features in the set of sEMG modalities will be examined independently as well as jointly with the intention of developing a smoothing mechanism for removing variance due to personal characteristics described by Lobov, \emph{et al} \cite{lobov}. Topological methods are rarely - if at all - utilized in the problem of gesture identification with most researchers opting for more traditional methods for smoothing EMG signals (e.g. moving averages, RMS, etc.) \cite{state}.
-
-The second step in the pipeline is a general classifier capable of reliably differentiating gestures with some degree of invariance to the format of training data. The technique of self-similarity matrices ("SSM") described by Traile, Bendich, and Harer may be used for this task wtih some modification\cite{ssm}.
 
 \begin{center}
 \noindent\rule{16cm}{0.4pt}
@@ -72,11 +85,11 @@ The second step in the pipeline is a general classifier capable of reliably diff
 
 \begin{thebibliography}{5}
 
-\bibitem{ninapro} Atzori, M.et al.Electromyography data for non-invasive naturally-controlledrobotic hand prostheses.Sci. Data1:140053 doi: 10.1038/sdata.2014.53 (2014).
-
 \bibitem{lobov} Lobov, Sergey, et al. “Latent Factors Limiting the Performance of sEMG-Interfaces.” Sensors, vol. 18, no. 4, June 2018, p. 1122., doi:10.3390/s18041122.
 
 \bibitem{state} Peerdeman  B,  Boere  D,  Witteveen  H,  Huis  in  ‘t  Veld  R,  Hermens H, Stramigioli S, Rietman H, Veltink P, Misra S. Myoelectric  forearm  prostheses:  State  of  the  art  from  a  user-centered perspective. J Rehabil Res Dev. 2011;48(6): 719–38. DOI:10.1682/JRRD.2010.08.016
+
+\bibitem{ninapro} Atzori, M.et al.Electromyography data for non-invasive naturally-controlled robotic hand prostheses.Sci. Data1:140053 doi: 10.1038/sdata.2014.53 (2014).
 
 \bibitem{bigdata} Phinyomark, A.; Scheme, E. EMG Pattern Recognition in the Era of Big Data and Deep Learning. Big Data Cogn. Comput. 2018, 2, 21. 
 
