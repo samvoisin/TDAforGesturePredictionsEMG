@@ -41,14 +41,12 @@ As sEMG technology has become more available researchers have turned their atten
 Researchers have been successful in gesture classification using EMG sensor data through a variety of means \cite{state}. However, methods employed for this task face two notable considerations:
 \begin{enumerate}
 \item[1)] Limited computational resources - processors and memory may be restricted to what can be embedded in a device.
-\item[2)] Availability of training data - The amount of training data required to achieve satistfactory results without overfitting is limited to  the quality and configuration of equipment of a single study. \cite{bigdata}
+\item[2)] Availability of training data - The amount of training data required to achieve satistfactory results without overfitting is limited to  the quality and configuration of equipment of a single study \cite{bigdata}.
 \end{enumerate}
 
 The artificial neural network ("ANN") is a prime example of a high-performing algorithm that has performed will in-sample but does not generalize well due to these constraints.
 
-This project seeks determine whether or not it is possible to extract latent features common to various classes of gestures in a way that is invariant to minor differences in quality and configuration of sEMG sensors and superficial characteristics of the wearer. This is important because, if successful, a large amount of training data captured in differing studies can be generalized with minimal information loss. I believe this can be achieved using topological methods for feature selection.
-
-Persistence diagrams allow us to inform decisions about high-dimensional geometric properties of data without the information loss associated with other techniques for visualizing features (e.g. principle component analysis). Persistence images use a weighting function emphasize pertinent topological features of a signal and de-emphasize noise. This approach should outperform the typical moving average approach \cite{state} to preprocessing sEMG signals which "bake-in" signal noise and in some cases smooth over potentially important characteristics like medium-sized amplitudes.
+This project seeks determine whether it is possible to extract latent features common to various classes of gestures in a way that is invariant to minor differences in quality and configuration of sEMG sensors and superficial characteristics of the individual performing the gesture. This is important because, if successful, a large amount of training data captured in differing studies can be generalized with minimal information loss. I believe this can be achieved using topological methods for feature identification and a data pipeline that includes a filter designed to remove noise while preserving these topological featueres as well as a classifier that requires little to no labeled training data (see section 4).
 
 
 \item \textbf{Previous Work}
@@ -63,18 +61,28 @@ This data set consists of 36 subjects performing a series of six distinct gestur
 
 \item \textbf{Analysis Methods \& Pipeline}
 
-My goal is to develop a data pipeline that consists of a feature extraction component and gesture classification component.
+My goal is to develop a data pipeline that consists of a component capable of filtering out statistical noise and emphasizing important topological features of a signal and a component capable of classifying a gesture in an unsupervised manner.
 
-Methods from topological data analysis will be utilized for feature extraction.
+Methods from topological data analysis will be utilized for feature extraction. Persistence diagrams allow us to inform decisions about high-dimensional geometric properties of data without the information loss associated with other techniques for visualizing features (e.g. principle component analysis). Persistence images use a weighting function to emphasize pertinent topological features of a signal and de-emphasize noise. This approach should outperform the typical moving average approach \cite{state} to preprocessing sEMG signals which "bake-in" signal noise and in some cases smooth over potentially important characteristics like medium-sized amplitudes.
 
-Specifically the persistence of topological features in the set of sEMG modalities will be examined independently as well as jointly with the intention of developing a smoothing mechanism for removing variance due to personal characteristics described by Lobov, \emph{et al.} \cite{lobov}. Topological methods are rarely - if at all - utilized in the problem of gesture identification with most researchers opting for more traditional methods for smoothing EMG signals (e.g. moving averages, RMS, etc.) \cite{state}.
+Important topological characteristics identified in this way will be used to encode a filter capable of differentiating useful signal from statistical noise. This represents the first stage in the pipeline. The filter will work by discarding the irrelevant components of the sEMG modalities as identified in the previous paragraph and keeping those components that provide useful information. For example, this might mean removing all periods whose absolute amplitude is less than some threshold which corresponds to imprecision in the sEMG sensor bracelet.
 
-The second step in the pipeline is a general classifier capable of reliably differentiating gestures with some degree of invariance to the format of training data. The technique of self-similarity matrices ("SSM") described by Traile, Bendich, and Harer may be used for this task wtih some modification\cite{ssm}.
+The second stage of the pipeline will feature a classifier capable of differentiating gestures based on their vectorized persistence diagrams or images. A supervised method will first be utilized here. Following tests of supervised learners and seperability of the vectors, unsupervised methods of clustering will be employed. The intention of using unsupervised methods is to further provide evidence that large training samples and complex machine learning algorithms are not stricly necessary for gesture recognition.
 
 \item \textbf{Software}
 
+My exploratory work with the data set thus far has utilized Python's standard packages for data analysis including matplotlib and NumPy. Additionally, I have been working with libraries that comprise the Scikit-TDA such as ripser, persim, and cechmate. I have already created a series of specialized functions for performing the analysis and building the pipeline described in the previous section. Looking forward the functions in Scikit-TDA should be sufficient for my needs throughout this project.
+
+The supervised and unsupervised classifiers in the second stage of my pipeline will be implemented via the scikit-learn library. Additional libraries will be employed as needed for these purposes. The SSM approach to unsupervized clustering will likely require that I develop several functions to meet my specific needs. This should be feasible using NumPy and SciPy, but may require some optimization for runtime efficiency. This can likely be performed using a number of Python-based C/ C++ optimization tools. Time permitting, this may also provide an opportunity to develop and employ functions in Julia to take advantage of the high-performance numerical analysis features found there.
 
 \item \textbf{Risk Mitigation}
+
+Current exploratory analysis is promising. However, there are three primary areas which could slow progress:
+\begin{enumerate}
+\item[1.] \emph{High computational complexity} - As exploratory analysis continue there may come a point where computing various complexes and persistence diagrams becomes computationally infeasible. This scenario is low risk as a significant amount of computation has already been performed without issue. The libraries described in the previous section are well optimized and the data set is not overly complex. Nevertheless, should computation become an issue the code and data can quickly be transferred to Duke's distributed servers and docker containers. Thus development will continue while other components are tested and tasks are performed.
+\item[2.] \emph{Poor classifier performance} - This is also low risk. There are many alternative methods for classifying gestures. The real risk in this area is the risk of overfitting a particular classifier to the dataset resulting in poor out-of-sample performance. The goal of the project is to find a classifier that is invariant to the user who is making the gesture. Overfitting the data would result in a failure to achieve this goal. To prevent overfitting, I will employ a modified form of k-fold cross validation that will remove all gestures performed by k subjects from the dataset. In the case of a supervised algorithm, I will fit the model to the training data and test on the hold out data. For the unsupervized algorithms, I will generate clusters from the training data and then see how well the hold-out data fits into these clusters.
+\item[3.] \emph{Inability to identify important features} - This is the greatest risk to the project goals. Inability to detect latent features in the modalities could be due to a number of factors including data quality, sensor imprecision, etc. If this scenario arises, various transformations will be employed on the data set in an attempt to uncover these features. Should that fail to mitigate the problem, I will explore alternative sEMG data sets.
+\end{enumerate}
 
 \end{enumerate}
 
