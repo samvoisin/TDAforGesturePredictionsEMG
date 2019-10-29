@@ -71,7 +71,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
         subj_dict[subj][g][:, 0],
         subj_dict[subj][g][:, signals]
         )
-        plt.title("Subject "+subj+"; Gesture "+g+"; Channel "+str(signals))
+        plt.title("Subject "+subj+"; Gesture "+g+"; Signal "+str(signals))
         plt.xlabel("ms")
         plt.ylabel("Amplitude")
         return
@@ -84,7 +84,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
 
         clr = 0 # color and signal selector
         for n, i in enumerate(signals):
-            ax[n].set_title("Channel "+str(i))
+            ax[n].set_title("Signal Number "+str(i))
             ax[n].plot(
                 subj_dict[subj][g][:, 0],
                 subj_dict[subj][g][:, i],
@@ -107,7 +107,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
     clr = 0
     for i in range(n_r):
         for j in range(n_c):
-            ax[i, j].set_title("Channel "+str(signals[clr]))
+            ax[i, j].set_title("Signal Number "+str(signals[clr]))
             ax[i, j].plot(
                 subj_dict[subj][g][:, 0],
                 subj_dict[subj][g][:, signals[clr]],
@@ -118,6 +118,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
                 fig.suptitle("Subject "+subj+"; Gesture "+g)
                 # return subplots for > 4 signals
                 return
+
 
 
 
@@ -151,6 +152,6 @@ def sublevel_set_time_series_dist(x):
 
 if __name__ == "__main__":
     thrty=load_data(subjects=["30"])
-    plot_gests("30", "3_1_2", thrty)
+    plot_gests("30", "3_1_2", thrty, signals=[1, 2, 3, 5, 8])
 
     plt.show()
