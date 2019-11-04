@@ -6,12 +6,12 @@
 import os
 
 import numpy as np
+import pandas as pd
+
 from ripser import ripser, Rips
 from persim import plot_diagrams, PersImage
 from persim import wasserstein, wasserstein_matching
 from persim import bottleneck, bottleneck_matching
-
-import matplotlib.pyplot as plt
 
 from TDA_helper_fcns import load_data, sublevel_set_time_series_dist
 
@@ -95,11 +95,9 @@ if __name__ == "__main__":
             pim_mat[vct, pimdim**2+2] = int(sbj) # subject number
             vct += 1
 
-
-    print(pim_mat)
-
-
-    #bd_mat = bottleneck_dist_mat(gdat)
-
-    #plt.matshow(bd_mat)
-    #plt.show()
+    # save matrix as DataFrame
+    pim_df = pd.DataFrame(pim_mat)
+    cnames = ["px"+str(i) for i in pim_df.columns]
+    cnames[-2:] = ["gest", "subj"]
+    pim_df.columns = cnames
+    pim_df.to_csv("./pim_vectors.csv")
