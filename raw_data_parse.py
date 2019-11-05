@@ -22,7 +22,7 @@ def mod_col_names(full_frame):
     full_frame.columns = colnames
     return full_frame
 
-def find_break_pts(gesture, t = 1000):
+def find_break_pts(gesture, t=1000):
     """
     find and return index for moments in df w/ > t ms between pt & nxt pt
     """
