@@ -59,7 +59,7 @@ def subj_to_pims(sbj, sdict, px, sd):
             ]
 
 ################################################################################
-
+# https://www.machinelearningplus.com/python/parallel-processing-python/
 
 if __name__ == "__main__":
 
@@ -81,6 +81,8 @@ if __name__ == "__main__":
         subj_to_pims,
         args=(sbj, sdict, pim_px, pim_sd)
             ) for sbj, sdict in gdat.items()]
+
+    pool.close()
 
 
     # save matrix as DataFrame

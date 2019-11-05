@@ -14,33 +14,29 @@ from sklearn.model_selection import StratifiedKFold
 
 pim_df = pd.read_csv("./Data/pim_vectors.csv")
 
-pims = pim_df.values[:, :-2] # subj @ -2; gests @ -1
-print(pims.shape)
-pimcov = pims.T @ pims
+####################### Visualizing Priciple Components ########################
 
-# PCA
-spect = la.eig(pimcov)
-print(sum(spect[0][:2]) / sum(spect[0]))
-eigbase = spect[1][:, :2].real
+#spect = la.eig(pimcov)
+#eigbase = spect[1][:, :2].real
 
-PCApims = pims @ eigbase
+#PCApims = pims @ eigbase
 
-pca_df = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -1]])
-pca_df.columns = ["V1", "V2", "subj"]
-pca_df.subj = pca_df.subj.astype("category")
+#pca_df = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -1]])
+#pca_df.columns = ["V1", "V2", "gest"]
+#pca_df.gest = pca_df.gest.astype("int32")
 
-sns.scatterplot("V1", "V2", hue="subj", data=pca_df)
-plt.show()
+#sns.scatterplot("V1", "V2", hue="gest", data=pca_df)
+#plt.show()
 
 ################################# Fitting SVM ##################################
 
 X = pim_df.values[:, :-2]
 y = pim_df.values[:, -1]
 
-skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=50)
 skf.get_n_splits(X, y)
 
-clf = svm.SVC()
+clf = svm.SVC(gamma="auto")
 
 acc_scores = []
 for train_index, test_index in skf.split(X, y):
@@ -48,3 +44,5 @@ for train_index, test_index in skf.split(X, y):
     y_train, y_test = y[train_index], y[test_index]
     clf.fit(X_train, y_train)
     acc_scores.append(clf.score(X_test, y_test))
+
+print(sum(acc_scores) / 5)
