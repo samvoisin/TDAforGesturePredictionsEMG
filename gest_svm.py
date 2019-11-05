@@ -12,28 +12,35 @@ import seaborn as sns
 from sklearn import svm
 from sklearn.model_selection import StratifiedKFold
 
-pim_df = pd.read_csv("./Data/pim_vectors.csv")
+pim_df = pd.read_csv("./pim_vectors.csv")
+pim_df.columns = [i for i in pim_df.columns][:-2] + ["subj", "gest"] # oops
 
 ####################### Visualizing Priciple Components ########################
 
-#spect = la.eig(pimcov)
-#eigbase = spect[1][:, :2].real
+pims = pim_df.iloc[:, :-2].values
+pimcov = pims.T @ pims
 
-#PCApims = pims @ eigbase
+spect = la.eig(pimcov)
+eigbase = spect[1][:, :2].real
 
-#pca_df = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -1]])
-#pca_df.columns = ["V1", "V2", "gest"]
-#pca_df.gest = pca_df.gest.astype("int32")
+PCApims = pims @ eigbase
 
-#sns.scatterplot("V1", "V2", hue="gest", data=pca_df)
-#plt.show()
+pca_df = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -1]])
+pca_df.columns = ["V1", "V2", "gest"]
+pca_df.gest = pca_df.gest.astype("int32")
+#pca_df.gest = pca_df.gest.astype("category")
+
+sns.scatterplot("V1", "V2", hue="gest", data=pca_df)
+plt.show()
 
 ################################# Fitting SVM ##################################
 
 X = pim_df.values[:, :-2]
 y = pim_df.values[:, -1]
 
-skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=50)
+folds=5
+
+skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=50)
 skf.get_n_splits(X, y)
 
 clf = svm.SVC(gamma="auto")
@@ -45,4 +52,4 @@ for train_index, test_index in skf.split(X, y):
     clf.fit(X_train, y_train)
     acc_scores.append(clf.score(X_test, y_test))
 
-print(sum(acc_scores) / 5)
+print(sum(acc_scores) / folds)

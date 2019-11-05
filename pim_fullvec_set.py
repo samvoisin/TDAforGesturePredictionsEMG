@@ -98,6 +98,6 @@ if __name__ == "__main__":
     # save matrix as DataFrame
     pim_df = pd.DataFrame(pim_mat)
     cnames = ["px"+str(i) for i in pim_df.columns]
-    cnames[-2:] = ["gest", "subj"]
+    cnames[-2:] = ["subj", "gest"]
     pim_df.columns = cnames
     pim_df.to_csv("./Data/pim_vectors.csv", index=False)
