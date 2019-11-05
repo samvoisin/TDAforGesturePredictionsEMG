@@ -8,6 +8,8 @@ import os
 
 from scipy import sparse
 
+from ripser import ripser, Rips
+from persim import bottleneck, bottleneck_matching
 
 
 def load_data(subjects="all", gestures="all", dataset="parsed"):
@@ -44,9 +46,6 @@ def load_data(subjects="all", gestures="all", dataset="parsed"):
                     dat[s][f[0:5]] = np.loadtxt(fh, delimiter=",", skiprows=1)
 
     return dat
-
-
-
 
 
 def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
@@ -120,7 +119,6 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
                 return
 
 
-
 def sublevel_set_time_series_dist(x):
     """
     Get sublevel set filtration for a time series
@@ -147,6 +145,55 @@ def sublevel_set_time_series_dist(x):
     return dist_mat
 
 
+def bottleneck_dist_mat(gdat, verbose=True):
+    """
+    Generate distance matrix for persistence diagrams of images
+
+    INPUTS
+    gdat - gestures data matrix; use output of load_data
+
+    OUTPUTS
+    distance matrix using bottleneck metric
+    """
+    ## code below taken from gen_all_pds.py - look there for os cmds and saving
+    # iterate through all subjects
+    pd_dict = dict()
+
+    for sbj, sdict in gdat.items():
+        # Dictionary of each subject with all gestures
+        for gnum, garray in sdict.items():
+            # loop through each signal in the gesture
+            t_axis = garray[:, 0] # time data
+            for s in range(1, garray.shape[1]-1):
+                # sublevel set filtraton
+                sls = sublevel_set_time_series_dist(garray[:,s])
+                # generate persistence diagram
+                pd = ripser(sls, distance_matrix=True)
+                # remove inf persistence point
+                pd["dgms"][0] = pd["dgms"][0][np.isfinite(pd["dgms"][0][:,1]),:]
+                pd_dict[sbj+"_"+gnum] = pd
+
+    # ordered list of keys
+    klist = [k for k in pd_dict.keys()]
+    klist.sort() # ordered ascending by subject, gesture
+
+    # initialize bottleneck distance matrix
+    bd_mat = np.zeros(len(klist)**2).reshape(len(klist), len(klist))
+
+    for n, k in enumerate(klist):
+        if verbose:
+            ### progress bar ###
+            pb = "~"*(int(n/len(klist)*100))+" "*(int((1-n/len(klist))*100))+"|"
+            print(pb, end="\r")
+            ####################
+        for m, j in enumerate(klist):
+            if n == m: bd_mat[n, m] = 0.0
+            else: bd_mat[n, m] = bottleneck(
+                pd_dict[k]["dgms"][0],
+                pd_dict[j]["dgms"][0]
+                )
+
+    return bd_mat
 
 
 if __name__ == "__main__":

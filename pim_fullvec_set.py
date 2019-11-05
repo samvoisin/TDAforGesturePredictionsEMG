@@ -68,7 +68,7 @@ def bottleneck_dist_mat(gdat, verbose=True):
 
 if __name__ == "__main__":
 
-    gdat = load_data(subjects=["02", "09"]) # gestures data
+    gdat = load_data() # gestures data
     nvects = len(gdat.keys()) * 24 # each subject performs 24 total gestures
     pimdim = 20 # persistence image dims (square)
     pimsd = 1e-5 # persistence image st. dev.
