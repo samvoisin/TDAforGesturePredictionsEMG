@@ -13,7 +13,6 @@ from sklearn import svm
 from sklearn.model_selection import StratifiedKFold
 
 pim_df = pd.read_csv("./pim_vectors.csv")
-pim_df.columns = [i for i in pim_df.columns][:-2] + ["subj", "gest"] # oops
 
 ####################### Visualizing Priciple Components ########################
 
@@ -21,11 +20,15 @@ pims = pim_df.iloc[:, :-2].values
 pimcov = pims.T @ pims
 
 spect = la.eig(pimcov)
+
+# percent of var exp
+print(sum(spect[0][0:2]) / sum(spect[0]))
+
 eigbase = spect[1][:, :2].real
 
 PCApims = pims @ eigbase
 
-pca_df = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -1]])
+pca_df = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -2]])
 pca_df.columns = ["V1", "V2", "gest"]
 pca_df.gest = pca_df.gest.astype("int32")
 #pca_df.gest = pca_df.gest.astype("category")
@@ -36,11 +39,11 @@ plt.show()
 ################################# Fitting SVM ##################################
 
 X = pim_df.values[:, :-2]
-y = pim_df.values[:, -1]
+y = pim_df.values[:, -2]
 
 folds=5
 
-skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=50)
+skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=1)
 skf.get_n_splits(X, y)
 
 clf = svm.SVC(gamma="auto")
