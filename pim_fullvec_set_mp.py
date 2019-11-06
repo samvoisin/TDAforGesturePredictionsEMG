@@ -52,7 +52,7 @@ def subj_to_pims(sbj, sdict, px, sd):
 
 if __name__ == "__main__":
 
-    gdat = load_data(subjects=["01", "03"]) # gestures data (test w/ 2)
+    gdat = load_data() # gestures data (test w/ 2)
     nvects = len(gdat.keys()) * 24 # each subject performs 24 total gestures
     pim_px = 20 # persistence image dims (square)
     pim_sd = 1e-5 # persistence image st. dev.
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     matsize = pim_px**2*nvects + 2*nvects
     pim_mat = np.zeros(matsize).reshape(nvects, -1) # init array for pim vects
 
-    pool = mp.Pool(4) # specify number of CPU cores
+    pool = mp.Pool(6) # specify number of CPU cores
 
     par_res = [
     pool.apply_async(subj_to_pims, args=(sbj, sdict, pim_px, pim_sd)
@@ -77,7 +77,6 @@ if __name__ == "__main__":
         pim_mat[r:r+24, :] = i.get()
         r += 24
 
-    print(pim_mat)
     # save matrix as DataFrame
     pim_df = pd.DataFrame(pim_mat)
     cnames = ["px"+str(i) for i in pim_df.columns]
