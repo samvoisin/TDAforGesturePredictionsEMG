@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     gdat = load_data() # gestures data (test w/ 2)
     nvects = len(gdat.keys()) * 24 # each subject performs 24 total gestures
-    pim_px = 20 # persistence image dims (square)
+    pim_px = 40 # persistence image dims (square)
     pim_sd = 1e-5 # persistence image st. dev.
 
     # vects have equal # persim pix + 2 cols for subj & gest labels
@@ -82,4 +82,4 @@ if __name__ == "__main__":
     cnames = ["px"+str(i) for i in pim_df.columns]
     cnames[-2:] = ["gest", "subj"]
     pim_df.columns = cnames
-    pim_df.to_csv("./Data/pim_vectors_mp.csv", index=False)
+    pim_df.to_csv("./pim_vectors_mp40.csv", index=False)

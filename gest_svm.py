@@ -8,33 +8,60 @@ import numpy as np
 import numpy.linalg as la
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.express as px
 
 from sklearn import svm
 from sklearn.model_selection import StratifiedKFold
+from sklearn.cluster import SpectralClustering
 
 pim_df = pd.read_csv("./pim_vectors.csv")
 
 ####################### Visualizing Priciple Components ########################
 
-pims = pim_df.iloc[:, :-2].values
-pimcov = pims.T @ pims
+#pims = pim_df.values[:, :-2] # persistence image vectors
+#pimcov = pims.T @ pims
 
-spect = la.eig(pimcov)
+#spect = la.eig(pimcov)
+
+#eval = 5
 
 # percent of var exp
-print(sum(spect[0][0:2]) / sum(spect[0]))
+#print(f"Percent of Variation: {sum(spect[0][eval:eval+3]) / sum(spect[0])}")
 
-eigbase = spect[1][:, :2].real
+#eigbase = spect[1][:, eval:eval+3].real
 
-PCApims = pims @ eigbase
+#PCApims = pims @ eigbase
 
-pca_df = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -2]])
-pca_df.columns = ["V1", "V2", "gest"]
-pca_df.gest = pca_df.gest.astype("int32")
+#pca_df = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -2]])
+#pca_df.columns = ["V1", "V2", "gest"]
+#pca_df.gest = pca_df.gest.astype("int32")
 #pca_df.gest = pca_df.gest.astype("category")
 
-sns.scatterplot("V1", "V2", hue="gest", data=pca_df)
-plt.show()
+#sns.scatterplot("V1", "V2", hue="gest", data=pca_df)
+#plt.show()
+
+#pca_df3 = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -2]])
+#pca_df3.columns = ["V1", "V2", "V3", "gest"]
+#pca_df3.gest = pca_df3.gest.astype("int32")
+
+#fig = px.scatter_3d(pca_df3, x='V1', y='V2', z='V3', color='gest')
+#fig.show()
+
+############################# Spectral Clustering ##############################
+
+X = pim_df.values[:, :-2]
+
+spc = SpectralClustering(
+    n_clusters=6,
+    affinity="rbf",
+    assign_labels="discretize"
+    )
+
+clstr = spc.fit_predict(X)
+
+print(clstr)
+
+
 
 ################################# Fitting SVM ##################################
 
