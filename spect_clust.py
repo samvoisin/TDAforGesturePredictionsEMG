@@ -52,7 +52,8 @@ def cut(A, G):
     pass
 
 
-def ratio_cut(L)
+def ratio_cut(L):
+    pass
 
 
 if __name__ == "__main__":
@@ -60,4 +61,5 @@ if __name__ == "__main__":
     pim_vecs = pim_df.values[:, :-2]
 
     W = form_wgt_mat(pim_vecs, rbf_kern, 1)
-    print(W)
+    D = np.diag(W.sum(axis=1))
+    L = D - W

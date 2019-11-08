@@ -21,57 +21,47 @@ pim_df = pd.read_csv("./pim_vectors_mp40.csv")
 pims = pim_df.values[:, :-2] # persistence image vectors
 pimcov = pims.T @ pims
 
-spect = la.eig(pimcov)
-print(spect[0][:10])
+evals, evecs = la.eig(pimcov)
+# sort eigenvalues and eigenvectors in descending order
+eidx = np.argsort(-evals.real)
+evecs = evecs.real[:, eidx]
+evals = evals.real[eidx]
+
+# skree plot
+skree = [sum(evals[:n+1]) for n, i in enumerate(evals)]
+#sns.scatterplot(range(10), skree[:10])
+#plt.show()
+
+########
 
 eval = 2
 
-# percent of var exp
-print(f"Percent of Variation: {sum(spect[0][eval:eval+2]) / sum(spect[0])}")
-
-eigbase = spect[1][:, eval:eval+2].real
-
+# PCA dim redux
+eigbase = evecs[:, :eval]
 PCApims = pims @ eigbase
 
 pca_df = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -2]])
 pca_df.columns = ["V1", "V2", "gest"]
 pca_df.gest = pca_df.gest.astype("int32")
-pca_df.gest = pca_df.gest.astype("category")
 
-sns.scatterplot("V1", "V2", data=pca_df)
-plt.show()
+#sns.scatterplot("V1", "V2", hue="gest", data=pca_df)
+#plt.show()
 
-print(f"Percent of Variation: {sum(spect[0][eval:eval+2]) / sum(spect[0])}")
-
-eigbase = spect[1][:, eval:eval+3].real
+eigbase = evecs[:, eval:eval+3]
 PCApims = pims @ eigbase
 
 pca_df3 = pd.DataFrame(np.c_[PCApims, pim_df.values[:, -2]])
 pca_df3.columns = ["V1", "V2", "V3", "gest"]
-pca_df3.gest = pca_df3.gest.astype("int32")
+pca_df3.gest = pca_df3.gest.astype("category")
 
 fig = px.scatter_3d(pca_df3, x='V1', y='V2', z='V3', color='gest')
 fig.show()
 
-############################# Spectral Clustering ##############################
+########################### Fitting SVM to PCA Pims ############################
 
-#X = pim_df.values[:, :-2]
+eigbase = evecs[:, :9]
 
-#spc = SpectralClustering(
-#    n_clusters=6,
-#    affinity="rbf",
-#    assign_labels="discretize"
-#    )
-
-#clstr = spc.fit_predict(X)
-
-#print(clstr)
-
-
-
-################################# Fitting SVM ##################################
-
-X = pim_df.values[:, :-2]
+X = pim_df.values[:, :-2] @ eigbase
 y = pim_df.values[:, -2]
 
 folds=5
