@@ -46,6 +46,7 @@ def form_wgt_mat(A, kern, gamma, tol=1e-10):
 
     return wgt_mat
 
+
 def cluster_composition(clabs, df, idcol):
     """
     return percentage of each gesture composing each cluster
@@ -54,7 +55,28 @@ def cluster_composition(clabs, df, idcol):
     df - data frame of observations including column of IDs (pandas DataFrame)
     idcol - specific column which includs ID values
     """
-    pass
+    df["cluster_ID"] = clabs
+    unq_cats = df[idcol].unique() # unique category variables in idcol
+    unq_cats = unq_cats.astype("int")
+    unq_cids = df["cluster_ID"].unique() # unique cluster IDs
+
+    # store cluster composition percentages
+    cpdf = np.zeros(len(unq_cats)*len(unq_cids)).reshape(len(unq_cids), -1)
+
+    for n, i in enumerate(unq_cids):
+        clust_tot = sum(df.cluster_ID==i)
+        temp = df[idcol][df.cluster_ID==i]
+        for m, j in enumerate(unq_cats):
+            cpdf[n, m] = (sum(temp == j) / clust_tot)*100
+
+    cpdf = pd.DataFrame(comp_df)
+    cpdf.columns = unq_cats
+    cpdf.index = unq_cids
+
+    return cpdf
+
+
+
 
 ################################################################################
 
@@ -64,7 +86,7 @@ if __name__ == "__main__":
 
     W = form_wgt_mat(pim_vecs, rbf_kern, 15)
     D = np.diag(W.sum(axis=1))
-    L = D - W # laplacian
+    L = D - W # graph laplacian
 
     evals, evecs = la.eig(L)
     eidx = np.argsort(evals.real)
@@ -72,12 +94,12 @@ if __name__ == "__main__":
     evals = evals.real[eidx]
 
     # plot first 20 eigenvalues 0 = lambda_1 <= lambda_2 <= ... <= lambda_20
-    sns.scatterplot(range(20), evals[:20])
-    plt.show()
+    #sns.scatterplot(range(20), evals[:20])
+    #plt.show()
 
-    X = evecs[:4]
+    X = evecs[:, :4]
 
     kmeans = KMeans(n_clusters=4, precompute_distances=True)
-    kmeans.fit(X)
+    kmeans.fit_predict(X)
 
-    kmeans.labels_
+    cluster_composition(kmeans.labels_, pim_df, "gest")
