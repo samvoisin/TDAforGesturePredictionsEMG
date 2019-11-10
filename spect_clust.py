@@ -8,9 +8,11 @@ import numpy as np
 import numpy.linalg as la
 import matplotlib.pyplot as plt
 import seaborn as sns
+import networkx as nx # draw graphs
 import plotly.express as px
 
-from sklearn.cluster import SpectralClustering, KMeans
+from sklearn.cluster import KMeans
+
 
 def rbf_kern(v1, v2, scale):
     """
@@ -25,6 +27,7 @@ def form_wgt_mat(A, kern, gamma, tol=1e-10):
     INPUT:
     pim vectors A
     kernel function
+    gamma - scale parameter
     tolerance - any weight below this value will be set to zero
     """
     (r, c) = A.shape
@@ -36,13 +39,8 @@ def form_wgt_mat(A, kern, gamma, tol=1e-10):
         print(pb, end="\r")
         ####################
         for j in range(r):
-            if i == j: wgt_mat[i, j] = 0
-            else: wgt_mat[i, j] = rbf_kern(A[i, :], A[j, :], gamma)
-
-    for i in range(r):
-        for j in range(r):
-            if wgt_mat[i, j] < tol and wgt_mat[i, j] != 0:
-                wgt_mat[i, j] = 0
+            if i != j and kern(A[i, :], A[j, :], gamma) > tol:
+                wgt_mat[i, j] = kern(A[i, :], A[j, :], gamma)
 
     return wgt_mat
 
@@ -69,13 +67,21 @@ def cluster_composition(clabs, df, idcol):
         for m, j in enumerate(unq_cats):
             cpdf[n, m] = (sum(temp == j) / clust_tot)*100
 
-    cpdf = pd.DataFrame(comp_df)
+    cpdf = pd.DataFrame(cpdf)
     cpdf.columns = unq_cats
     cpdf.index = unq_cids
 
     return cpdf
 
 
+def draw_graph(G):
+    """
+    draw graph G
+    """
+    pos = nx.spring_layout(G)
+    nx.draw_networkx_nodes(G, pos)
+    nx.draw_networkx_labels(G, pos)
+    nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5)
 
 
 ################################################################################
@@ -83,8 +89,9 @@ def cluster_composition(clabs, df, idcol):
 if __name__ == "__main__":
     pim_df = pd.read_csv("./pim_vectors_mp40.csv")
     pim_vecs = pim_df.values[:, :-2]
+    pim_df.gest = pim_df.gest.astype("int")
 
-    W = form_wgt_mat(pim_vecs, rbf_kern, 15)
+    W = form_wgt_mat(pim_vecs, rbf_kern, 10, tol=1e-6)
     D = np.diag(W.sum(axis=1))
     L = D - W # graph laplacian
 
@@ -93,13 +100,39 @@ if __name__ == "__main__":
     evecs = evecs.real[:, eidx]
     evals = evals.real[eidx]
 
-    # plot first 20 eigenvalues 0 = lambda_1 <= lambda_2 <= ... <= lambda_20
-    #sns.scatterplot(range(20), evals[:20])
-    #plt.show()
+    # plot first 20 eigenvalues: 0 = lambda_1 <= lambda_2 <= ... <= lambda_20
+    sns.scatterplot(range(20), evals[:20])
+    plt.plot([0, 20], [0, 0], color="black", linestyle="--")
+    plt.show()
 
-    X = evecs[:, :4]
 
-    kmeans = KMeans(n_clusters=4, precompute_distances=True)
+    # draw the graph
+    node_colors = [None,"red","blue","green","orange","purple","pink"]
+    node_color_map = []
+    V = W.shape[0] # cardinality of V
+    G = nx.Graph()
+    G.add_nodes_from(range(V))
+    for i in range(V):
+        node_color_map.append(node_colors[pim_df.gest[i]])
+        for j in range(V):
+            if j == i: break # only do upper triangle of matrix
+            G.add_edge(i, j)
+            G[i][j]["weight"] = W[i, j]
+
+    nx.draw(G, node_color=node_color_map, with_labels=True)
+    plt.show()
+
+    for i in range(1,7):
+        plt.subplot(2, 3, i)
+        sns.scatterplot(evecs[:,i+3], evecs[:,i+4], hue=pim_df.gest, palette="Set1")
+        plt.xlabel("EigVector" + str(i+3))
+        plt.ylabel("EigVector" + str(i+4))
+    plt.show()
+
+    X = evecs[:, 3:8]
+
+    kmeans = KMeans(n_clusters=5, precompute_distances=True)
     kmeans.fit_predict(X)
 
-    cluster_composition(kmeans.labels_, pim_df, "gest")
+    c_comp = cluster_composition(kmeans.labels_, pim_df, "gest")
+    print(c_comp)
