@@ -3,8 +3,6 @@
 ############# Calculating Rips complex on all channels w/ out time #############
 ################################################################################
 
-import os
-
 import numpy as np
 import pandas as pd
 
@@ -52,7 +50,7 @@ def subj_to_pims(sbj, sdict, px, sd):
 
 if __name__ == "__main__":
 
-    gdat = load_data() # gestures data (test w/ 2)
+    gdat = load_data() # gestures data
     nvects = len(gdat.keys()) * 24 # each subject performs 24 total gestures
     pim_px = 40 # persistence image dims (square)
     pim_sd = 1e-5 # persistence image st. dev.

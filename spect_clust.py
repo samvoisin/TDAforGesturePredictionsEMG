@@ -18,10 +18,24 @@ def rbf_kern(v1, v2, scale):
     """
     radial-basis function
     """
-    return np.exp(la.norm(v1-v2, 2)**2 / -scale)
+    return np.exp(la.norm(v1-v2, 2)**2 / -2*scale)
 
 
-def form_wgt_mat(A, kern, gamma, tol=1e-10):
+def unweighted_kern(v1, v2, scale=1):
+    """
+    kernel function for unweighted graph
+    """
+    return 1
+
+
+def euclidian_kern(v1, v2, scale=1):
+    """
+    euclidian/ L2 norm between two vectors
+    """
+    return la.norm(v1-v2,ord=2)
+
+
+def form_wgt_mat(A, kern, scale, tol=1e-10):
     """
     generate weight matrix
     INPUT:
@@ -39,8 +53,8 @@ def form_wgt_mat(A, kern, gamma, tol=1e-10):
         print(pb, end="\r")
         ####################
         for j in range(r):
-            if i != j and kern(A[i, :], A[j, :], gamma) > tol:
-                wgt_mat[i, j] = kern(A[i, :], A[j, :], gamma)
+            if i != j and kern(A[i, :], A[j, :], scale) > tol:
+                wgt_mat[i, j] = kern(A[i, :], A[j, :], scale)
 
     return wgt_mat
 
@@ -56,20 +70,23 @@ def cluster_composition(clabs, df, idcol):
     df["cluster_ID"] = clabs
     unq_cats = df[idcol].unique() # unique category variables in idcol
     unq_cats = unq_cats.astype("int")
-    unq_cids = df["cluster_ID"].unique() # unique cluster IDs
+    unq_clusts = df["cluster_ID"].unique() # unique cluster IDs
 
     # store cluster composition percentages
-    cpdf = np.zeros(len(unq_cats)*len(unq_cids)).reshape(len(unq_cids), -1)
+    cpdf = np.zeros(len(unq_cats)*len(unq_clusts)).reshape(len(unq_clusts), -1)
 
-    for n, i in enumerate(unq_cids):
+    clust_ct = np.zeros(len(unq_clusts))
+    for n, i in enumerate(unq_clusts):
         clust_tot = sum(df.cluster_ID==i)
+        clust_ct[n] = clust_tot # number of pts in cluster i
         temp = df[idcol][df.cluster_ID==i]
         for m, j in enumerate(unq_cats):
-            cpdf[n, m] = (sum(temp == j) / clust_tot)*100
+            cpdf[n, m] = (sum(temp == j) / clust_tot)
 
     cpdf = pd.DataFrame(cpdf)
     cpdf.columns = unq_cats
-    cpdf.index = unq_cids
+    cpdf.index = unq_clusts
+    cpdf["ClusterCount"] = clust_ct
 
     return cpdf
 
@@ -86,12 +103,17 @@ def draw_graph(G):
 
 ################################################################################
 
+### IS LAPLACIAN BLOCK DIAGONAL???? NEED TO CHECK ######
+
+
 if __name__ == "__main__":
     pim_df = pd.read_csv("./pim_vectors_mp40.csv")
+    #pim_df = pim_df.loc[pim_df.gest != 1.0, :]
     pim_vecs = pim_df.values[:, :-2]
     pim_df.gest = pim_df.gest.astype("int")
 
-    W = form_wgt_mat(pim_vecs, rbf_kern, 10, tol=1e-6)
+    #W = form_wgt_mat(pim_vecs, rbf_kern, scale=1, tol=1e-6)
+    W = form_wgt_mat(pim_vecs, unweighted_kern, scale=1, tol=1e-6)
     D = np.diag(W.sum(axis=1))
     L = D - W # graph laplacian
 
@@ -107,31 +129,34 @@ if __name__ == "__main__":
 
 
     # draw the graph
-    node_colors = [None,"red","blue","green","orange","purple","pink"]
-    node_color_map = []
-    V = W.shape[0] # cardinality of V
-    G = nx.Graph()
-    G.add_nodes_from(range(V))
-    for i in range(V):
-        node_color_map.append(node_colors[pim_df.gest[i]])
-        for j in range(V):
-            if j == i: break # only do upper triangle of matrix
-            G.add_edge(i, j)
-            G[i][j]["weight"] = W[i, j]
+    #node_colors = [None,"red","blue","green","orange","purple","pink"]
+    #node_color_map = []
+    #V = W.shape[0] # cardinality of V
+    #G = nx.Graph()
+    #G.add_nodes_from(range(V))
+    #for i in range(V):
+    #    node_color_map.append(node_colors[pim_df.gest[i]])
+    #    for j in range(V):
+    #        if j == i: break # only do upper triangle of matrix
+    #        G.add_edge(i, j)
+    #        G[i][j]["weight"] = W[i, j]
 
-    nx.draw(G, node_color=node_color_map, with_labels=True)
-    plt.show()
+    #nx.draw(G, node_color=node_color_map, with_labels=True)
+    #plt.show()
 
     for i in range(1,7):
         plt.subplot(2, 3, i)
-        sns.scatterplot(evecs[:,i+3], evecs[:,i+4], hue=pim_df.gest, palette="Set1")
-        plt.xlabel("EigVector" + str(i+3))
-        plt.ylabel("EigVector" + str(i+4))
+        sns.scatterplot(evecs[:,i],
+                        evecs[:,i+1],
+                        hue=pim_df.gest,
+                        palette="Set1")
+        plt.xlabel("EigVector " + str(i))
+        plt.ylabel("EigVector " + str(i+1))
     plt.show()
 
-    X = evecs[:, 3:8]
+    X = evecs[:, 1:7]
 
-    kmeans = KMeans(n_clusters=5, precompute_distances=True)
+    kmeans = KMeans(n_clusters=6, precompute_distances=True)
     kmeans.fit_predict(X)
 
     c_comp = cluster_composition(kmeans.labels_, pim_df, "gest")
