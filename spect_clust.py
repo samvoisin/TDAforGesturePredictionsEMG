@@ -53,7 +53,7 @@ def form_wgt_mat(A, kern, scale, tol=1e-10):
         print(pb, end="\r")
         ####################
         for j in range(r):
-            if i != j and kern(A[i, :], A[j, :], scale) > tol:
+            if i != j:
                 wgt_mat[i, j] = kern(A[i, :], A[j, :], scale)
 
     return wgt_mat
@@ -91,16 +91,6 @@ def cluster_composition(clabs, df, idcol):
     return cpdf
 
 
-def draw_graph(G):
-    """
-    draw graph G
-    """
-    pos = nx.spring_layout(G)
-    nx.draw_networkx_nodes(G, pos)
-    nx.draw_networkx_labels(G, pos)
-    nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5)
-
-
 ################################################################################
 
 ### IS LAPLACIAN BLOCK DIAGONAL???? NEED TO CHECK ######
@@ -112,49 +102,38 @@ if __name__ == "__main__":
     pim_vecs = pim_df.values[:, :-2]
     pim_df.gest = pim_df.gest.astype("int")
 
-    #W = form_wgt_mat(pim_vecs, rbf_kern, scale=1, tol=1e-6)
-    W = form_wgt_mat(pim_vecs, unweighted_kern, scale=1, tol=1e-6)
+    W = form_wgt_mat(pim_vecs, rbf_kern, scale=1)
     D = np.diag(W.sum(axis=1))
     L = D - W # graph laplacian
 
-    evals, evecs = la.eig(L)
+    # http://papers.nips.cc/paper/2092-on-spectral-clustering-analysis-and-an-algorithm.pdf
+    D_hlf = la.inv(np.diag([(n)**0.5 for n in np.diag(D)]))
+    L_sym = D_hlf @ W @ D_hlf # symmetric normalized laplacian (w/o I - L)
+
+    #evals, evecs = la.eig(L) # code for graph laplacian
+    evals, evecs = la.eig(L_sym) # code for symmetric normalized laplacian
     eidx = np.argsort(evals.real)
     evecs = evecs.real[:, eidx]
     evals = evals.real[eidx]
 
     # plot first 20 eigenvalues: 0 = lambda_1 <= lambda_2 <= ... <= lambda_20
-    sns.scatterplot(range(20), evals[:20])
+    sns.scatterplot(range(20), evals[-1:-21:-1])
     plt.plot([0, 20], [0, 0], color="black", linestyle="--")
     plt.show()
 
-
-    # draw the graph
-    #node_colors = [None,"red","blue","green","orange","purple","pink"]
-    #node_color_map = []
-    #V = W.shape[0] # cardinality of V
-    #G = nx.Graph()
-    #G.add_nodes_from(range(V))
-    #for i in range(V):
-    #    node_color_map.append(node_colors[pim_df.gest[i]])
-    #    for j in range(V):
-    #        if j == i: break # only do upper triangle of matrix
-    #        G.add_edge(i, j)
-    #        G[i][j]["weight"] = W[i, j]
-
-    #nx.draw(G, node_color=node_color_map, with_labels=True)
+    #for i in range(1,7):
+    #    plt.subplot(2, 3, i)
+    #    sns.scatterplot(evecs[:,i],
+    #                    evecs[:,i+1],
+    #                    hue=pim_df.gest,
+    #                    palette="Set1")
+    #    plt.xlabel("EigVector " + str(i))
+    #    plt.ylabel("EigVector " + str(i+1))
     #plt.show()
 
-    for i in range(1,7):
-        plt.subplot(2, 3, i)
-        sns.scatterplot(evecs[:,i],
-                        evecs[:,i+1],
-                        hue=pim_df.gest,
-                        palette="Set1")
-        plt.xlabel("EigVector " + str(i))
-        plt.ylabel("EigVector " + str(i+1))
-    plt.show()
+    print(evecs)
 
-    X = evecs[:, 1:7]
+    X = evecs[:, -1:-7:-1]
 
     kmeans = KMeans(n_clusters=6, precompute_distances=True)
     kmeans.fit_predict(X)
