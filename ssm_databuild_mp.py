@@ -1,10 +1,10 @@
+import os
 import numpy as np
 import numpy.linalg as la
 import pandas as pd
 import matplotlib.pyplot as plt
 
 import multiprocessing as mp
-import json
 
 from TDA_helper_fcns import load_data
 
@@ -25,16 +25,28 @@ def build_SSM(A, norm_ord=2):
         for j in range(r):
             SSM[i, j] = la.norm(A[i, 1:-1]-A[j, 1:-1], norm_ord)
 
-    return {"gnum" : gnum, "SSM" : SSM, "time" : tvec}
+    return {"SSM" : SSM, "time" : tvec}
 
 
-def subj_SSM_mp(sdict, norm_ord=2):
+def subj_SSM_mp(inp_lst):
     """
     multiprocessing helper function for creating self similarity matrices
-    sdict is dictionary for each subject (e.g. '01', '12', '25')
+    inp_list - single list of inputs; format needed for multiprocessing
+    sbj - subject number (e.g. '01', '12', '25')
+    sdict - dictionary for each subject
+    file_path - primary directory for saving data
     norm_ord - numpy vector norm to be passed to `build_SSM`
     """
-    return { gnum : build_SSM(gest) for gnum, gest in sdict.items() }
+    sbj, sdict, file_path, norm_ord = inp_lst
+    # create and save SSMs for all gestures performed by subject
+    for gnum, gest in sdict.items():
+        sbj_path = file_path + "/" + sbj + "/"
+        os.makedirs(sbj_path, exist_ok=True)
+        ssm_dict = build_SSM(gest, norm_ord)
+        ssm_frame = pd.DataFrame(ssm_dict["SSM"])
+        ssm_frame.index = ssm_dict["time"]
+        file_ref = sbj_path + gnum + ".csv"
+        ssm_frame.to_csv(file_ref, index=True, sep=",")
 
 
 ################################################################################
@@ -42,23 +54,14 @@ def subj_SSM_mp(sdict, norm_ord=2):
 
 if __name__ == "__main__":
 
+    to_dir = "./Data/EMG_data_for_gestures-SSMs/"
+
+    print("Loading Data...\n")
     gdat = load_data() # gestures data
+    finps = [[sbj, sdict, to_dir, 2] for sbj, sdict in gdat.items()] # inp list
 
-    pool = mp.Pool(6) # specify number of CPU cores
+    print("Performing Multiprocessing Loop...\n")
+    with mp.Pool(processes=3) as pool:
+        pool.map(subj_SSM_mp, finps)
 
-    par_res = {
-    sbj : pool.apply_async(subj_SSM_mp, args=(sdict, 2)
-    ) for sbj, sdict in gdat.items()
-    }
-
-    pool.close() # end multiprocessing
-    pool.join()
-
-    gdat_ssm = {sbj : i.get() for sbj, i in par_res.items()}
-
-    with open("./ssm_data_mp.json", w) as fh:
-        json.dump(gdat_ssm, fh)
-
-    ### Read JSON from file ###
-    #with open("./ssm_data_mp.json", r) as fh:
-    #    gdat_ssm = json.load(fh)
+    print("Multiprocessing Complete.\n")

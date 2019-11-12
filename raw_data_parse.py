@@ -22,6 +22,7 @@ def mod_col_names(full_frame):
     full_frame.columns = colnames
     return full_frame
 
+
 def find_break_pts(gesture, t=1000):
     """
     find and return index for moments in df w/ > t ms between pt & nxt pt
@@ -33,6 +34,7 @@ def find_break_pts(gesture, t=1000):
         ]
     return brk_pts
 
+
 def zero_time(seg_df):
     """
     take prev segmented DataFrame by gest; set time_ms to start at 0
@@ -40,6 +42,7 @@ def zero_time(seg_df):
     end_time = min(seg_df.time_ms)
     seg_df.time_ms = seg_df.time_ms - end_time
     return seg_df
+
 
 def gest_dict(filepath):
     """
@@ -71,6 +74,7 @@ def gest_dict(filepath):
 
     return all_gst
 
+
 def build_new_ref(to_dir, sn, orig_file, g, ct):
     """
     build a new file path based on attributes of data to be saved;
@@ -87,7 +91,8 @@ def build_new_ref(to_dir, sn, orig_file, g, ct):
         new_ref = to_dir + sn + "/" + str(g) + "_" + str(ct) + "_2.csv"
     return new_ref
 
-### script body
+
+### script body ###
 
 # path to current/ raw data
 raw_dir = "./Data/EMG_data_for_gestures-master/"

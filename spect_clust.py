@@ -135,6 +135,10 @@ if __name__ == "__main__":
 
     X = evecs[:, -1:-7:-1]
 
+    # normalize rows of X
+    for n, i in enumerate(X):
+        X[n, :] = i / la.norm(i, 2)
+
     kmeans = KMeans(n_clusters=6, precompute_distances=True)
     kmeans.fit_predict(X)
 
