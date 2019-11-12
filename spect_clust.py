@@ -86,7 +86,7 @@ def cluster_composition(clabs, df, idcol):
     cpdf = pd.DataFrame(cpdf)
     cpdf.columns = unq_cats
     cpdf.index = unq_clusts
-    cpdf["ClusterCount"] = clust_ct
+    cpdf["MemberCount"] = clust_ct
 
     return cpdf
 
@@ -121,8 +121,8 @@ if __name__ == "__main__":
     plt.plot([0, 20], [0, 0], color="black", linestyle="--")
     plt.show()
 
-    #for i in range(1,7):
-    #    plt.subplot(2, 3, i)
+    #for i in range(-1,-7,-1):
+    #    plt.subplot(2, 3, i*-1)
     #    sns.scatterplot(evecs[:,i],
     #                    evecs[:,i+1],
     #                    hue=pim_df.gest,
@@ -130,8 +130,6 @@ if __name__ == "__main__":
     #    plt.xlabel("EigVector " + str(i))
     #    plt.ylabel("EigVector " + str(i+1))
     #plt.show()
-
-    print(evecs)
 
     X = evecs[:, -1:-7:-1]
 
