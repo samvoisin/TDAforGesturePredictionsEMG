@@ -61,7 +61,7 @@ if __name__ == "__main__":
     finps = [[sbj, sdict, to_dir, 2] for sbj, sdict in gdat.items()] # inp list
 
     print("Performing Multiprocessing Loop...\n")
-    with mp.Pool(processes=3) as pool:
+    with mp.Pool(processes=6) as pool:
         pool.map(subj_SSM_mp, finps)
 
     print("Multiprocessing Complete.\n")
