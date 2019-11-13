@@ -1,4 +1,5 @@
 import os
+import math
 import numpy as np
 import numpy.linalg as la
 import pandas as pd
@@ -9,7 +10,26 @@ import multiprocessing as mp
 from TDA_helper_fcns import load_data
 
 
-def build_SSM(A, norm_ord=2):
+
+def rbf_scalar_weight(u, v, scale):
+    """
+    radial basis weighting function for rbf kernel
+    used to construct SSM
+    u and v are scalars
+    """
+    return math.exp((u**2 + v**2) / -scale)
+
+
+def rbf_vector_weight(u, v, scale, norm_ord=2):
+    """
+    radial basis weighting function for rbf kernel
+    used to construct SSM
+    u and v are vectors (1D numpy arrays)
+    """
+    return math.exp(la.norm(u-v, norm_ord)**2 / -scale)
+
+
+def build_vec_SSM(A, scale, norm_ord=2):
     """
     construct self-similarity matrix from array A with dim (n, m)
     norm_ord - numpy vector norm; default is L2/ euclidian norm
@@ -23,9 +43,32 @@ def build_SSM(A, norm_ord=2):
     SSM = np.zeros(r**2).reshape(r, r) # self-similarity matrix
     for i in range(r):
         for j in range(r):
-            SSM[i, j] = la.norm(A[i, 1:-1]-A[j, 1:-1], norm_ord)
+            SSM[i, j] = rbf_vector_weight(
+                A[i, 1:-1],
+                A[j, 1:-1],
+                scale,
+                norm_ord
+                )
 
     return {"SSM" : SSM, "time" : tvec}
+
+
+def build_1D_SSM(A, wgt_fcn, scale=1):
+    """
+    construct self-similarity matrix from array A with dim (n x 1)
+    This version of the SSM function uses rbf weighting function
+    scaling parameter defaults to 1
+
+    OUTPUTS
+    dictionary with gesture number, self-similarity matrix, array of time points
+    """
+    n = len(A)
+    SSM = np.zeros(n**2).reshape(n, n) # self-similarity matrix
+    for i in range(n):
+        for j in range(n):
+            SSM[i, j] = wgt_fcn(A[i], A[j], scale)
+
+    return SSM
 
 
 def subj_SSM_mp(inp_lst):

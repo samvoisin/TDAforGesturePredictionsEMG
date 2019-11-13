@@ -93,9 +93,6 @@ def cluster_composition(clabs, df, idcol):
 
 ################################################################################
 
-### IS LAPLACIAN BLOCK DIAGONAL???? NEED TO CHECK ######
-
-
 if __name__ == "__main__":
     pim_df = pd.read_csv("./pim_vectors_mp40.csv")
     #pim_df = pim_df.loc[pim_df.gest != 1.0, :]
