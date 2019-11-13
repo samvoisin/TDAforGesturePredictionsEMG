@@ -63,7 +63,6 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
               'firebrick', 'gold','forestgreen')
 
     ### single plot code ###
-
     # if one signal specified no subplots necessary
     if type(signals) == int or len(signals) == 1:
         plt.plot(

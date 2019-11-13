@@ -13,11 +13,28 @@ from TDA_helper_fcns import load_data
 
 def rbf_scalar_weight(u, v, scale):
     """
-    radial basis weighting function for rbf kernel
-    used to construct SSM
+    radial basis weighting function used to construct SSM
     u and v are scalars
     """
-    return math.exp((u**2 + v**2) / -scale)
+    return math.exp( (u - v)**2 / -scale)
+
+
+def L2_scalar_weight(u, v, scale):
+    """
+    squared euclidian distance metric for scalar array SSM
+    u and v are scalars
+    scale parameter is ignored
+    """
+    return (u - v)**2
+
+
+def L1_scalar_weight(u, v, scale):
+    """
+    manhattan distance metric for scalar array SSM
+    u and v are scalars
+    scale parameter is ignored
+    """
+    return abs(u - v)
 
 
 def rbf_vector_weight(u, v, scale, norm_ord=2):
@@ -37,18 +54,22 @@ def build_vec_SSM(A, scale, norm_ord=2):
     OUTPUTS
     dictionary with gesture number, self-similarity matrix, array of time points
     """
+    ##### consider autotuneing scale param #####
     tvec = A[:, 0] # time vector
     gnum = A[0, -1] # gesture number
     (r, c) = A[:, 1:-1].shape
     SSM = np.zeros(r**2).reshape(r, r) # self-similarity matrix
     for i in range(r):
         for j in range(r):
-            SSM[i, j] = rbf_vector_weight(
-                A[i, 1:-1],
-                A[j, 1:-1],
-                scale,
-                norm_ord
-                )
+            if i < j:
+                # need only calc upper or lower trianglular
+                SSM[i, j] = rbf_vector_weight(
+                    A[i, 1:-1],
+                    A[j, 1:-1],
+                    scale,
+                    norm_ord
+                    )
+
 
     return {"SSM" : SSM, "time" : tvec}
 
@@ -62,11 +83,16 @@ def build_1D_SSM(A, wgt_fcn, scale=1):
     OUTPUTS
     dictionary with gesture number, self-similarity matrix, array of time points
     """
+    ##### consider autotuneing scale param #####
     n = len(A)
     SSM = np.zeros(n**2).reshape(n, n) # self-similarity matrix
     for i in range(n):
         for j in range(n):
-            SSM[i, j] = wgt_fcn(A[i], A[j], scale)
+            # need only calc upper or lower trianglular
+            if i <= j: SSM[i, j] = wgt_fcn(A[i], A[j], scale)
+
+    # combine upper & lower trianglular; remove double sum of diagonal
+    SSM = SSM + SSM.T - np.diag(np.diag(SSM))
 
     return SSM
 
