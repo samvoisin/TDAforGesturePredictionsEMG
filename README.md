@@ -14,5 +14,8 @@ Source data can be found here: https://archive.ics.uci.edu/ml/datasets/EMG+data+
 
 
 To Do List:
-1) Create data set of persistence diagram vectors
-2) Add random Gaussian noise and recalculate persistence
+1) Create data set of persistence diagram vectors X done
+2) Add random Gaussian noise and recalculate persistence X done - null result
+3) normalize persistence images for log reg X done
+4) use persim to ID influential image components for filter
+5) SSM fusion
