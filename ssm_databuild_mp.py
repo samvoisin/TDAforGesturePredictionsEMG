@@ -109,13 +109,18 @@ def subj_SSM_mp(inp_lst):
     sbj, sdict, file_path, norm_ord = inp_lst
     # create and save SSMs for all gestures performed by subject
     for gnum, gest in sdict.items():
-        sbj_path = file_path + "/" + sbj + "/"
-        os.makedirs(sbj_path, exist_ok=True)
-        ssm_dict = build_SSM(gest, norm_ord)
-        ssm_frame = pd.DataFrame(ssm_dict["SSM"])
-        ssm_frame.index = ssm_dict["time"]
-        file_ref = sbj_path + gnum + ".csv"
-        ssm_frame.to_csv(file_ref, index=True, sep=",")
+        for i in range(1, 9): # loop over 8 channels
+            ssm_dict = build_1D_SSM(gest[:, i], norm_ord) # create 1D SSM matrix
+            ### save SSM as data frame w/ time idx ###
+            ssm_frame = pd.DataFrame(ssm_dict["SSM"])
+            ssm_frame.index = ssm_dict["time"]
+            sbj_path = file_path + "/" + sbj + "/" # file path to save in
+            os.makedirs(sbj_path, exist_ok=True) # ensure directory structure
+            file_ref = sbj_path + gnum + "ch_" + str(i) + ".csv"
+            ssm_frame.to_csv(file_ref, index=True, sep=",") # save SSM df as csv
+
+
+
 
 
 ################################################################################

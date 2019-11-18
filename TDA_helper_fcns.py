@@ -48,6 +48,29 @@ def load_data(subjects="all", gestures="all", dataset="parsed"):
     return dat
 
 
+def get_max_perf_time(gdat):
+    """
+    find the maximum time required to perform each gesture for a
+    given set of subjects
+
+    INPUTS
+    gdat is gestures data set as returned by `load_data` function
+
+    OUTPUTS
+    dictionary w/ gesture number (int) : maximum performance time (int)
+    """
+    sdict = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0} # dictionary to be returned w/ keys
+    for k, v in gdat.items(): # subject, gesture set
+        for g, u in v.items(): # gesture ("1_0_1", "4_1_2"), array
+            # last value in array denotes gesture being performed (i.e. [1, 6])
+            # this is key in sdict
+            gid = int(u[-1, -1])
+            # update if current nrows in current u is greater than stored value
+            if u.shape[0] > sdict[gid]:
+                sdict[gid] = u.shape[0]
+    return sdict
+
+
 def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
     """
     Example input: plot_gests("30", "3_1_2", thrty, signals=[1, 2, 3, 5, 8])
@@ -193,6 +216,9 @@ def bottleneck_dist_mat(gdat, verbose=True):
                 )
 
     return bd_mat
+
+
+
 
 
 if __name__ == "__main__":

@@ -19,4 +19,6 @@ To Do List:
 3) normalize persistence images for log reg X done
 4) use persim to ID influential image components for filter
 5) SSM fusion
+    a) create SNF functions
+    b) speed up SSM creation with cython, numba, sparse matrix
 6) CDER Classifier for time-series(?)
