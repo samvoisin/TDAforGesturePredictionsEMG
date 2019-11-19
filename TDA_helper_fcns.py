@@ -68,6 +68,7 @@ def get_max_perf_time(gdat):
             # update if current nrows in current u is greater than stored value
             if u.shape[0] > sdict[gid]:
                 sdict[gid] = u.shape[0]
+                
     return sdict
 
 
