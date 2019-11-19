@@ -70,7 +70,6 @@ def build_vec_SSM(A, scale, norm_ord=2):
                     norm_ord
                     )
 
-
     return {"SSM" : SSM, "time" : tvec}
 
 
@@ -80,12 +79,15 @@ def build_1D_SSM(A, wgt_fcn, scale=1):
     This version of the SSM function uses rbf weighting function
     scaling parameter defaults to 1
 
+    INPUTS
+    A - a numpy array
+
     OUTPUTS
     dictionary with gesture number, self-similarity matrix, array of time points
     """
     ##### consider autotuneing scale param #####
     n = len(A)
-    SSM = np.zeros(n**2).reshape(n, n) # self-similarity matrix
+    SSM = np.zeros(n**2).reshape(n, n) # empty self-similarity matrix
     for i in range(n):
         for j in range(n):
             # need only calc upper or lower trianglular
@@ -109,14 +111,15 @@ def subj_SSM_mp(inp_lst):
     sbj, sdict, file_path, norm_ord = inp_lst
     # create and save SSMs for all gestures performed by subject
     for gnum, gest in sdict.items():
+        time_vec = gest[:, 0] # vector of time values (ms)
         for i in range(1, 9): # loop over 8 channels
-            ssm_dict = build_1D_SSM(gest[:, i], norm_ord) # create 1D SSM matrix
+            ssm = build_1D_SSM(gest[:, i], L2_scalar_weight, norm_ord)
             ### save SSM as data frame w/ time idx ###
-            ssm_frame = pd.DataFrame(ssm_dict["SSM"])
-            ssm_frame.index = ssm_dict["time"]
-            sbj_path = file_path + "/" + sbj + "/" # file path to save in
+            ssm_frame = pd.DataFrame(ssm)
+            ssm_frame.index = time_vec
+            sbj_path = file_path + "/" + sbj + "/" # file path to save ssm to
             os.makedirs(sbj_path, exist_ok=True) # ensure directory structure
-            file_ref = sbj_path + gnum + "ch_" + str(i) + ".csv"
+            file_ref = sbj_path + gnum + "_ch_" + str(i) + ".csv"
             ssm_frame.to_csv(file_ref, index=True, sep=",") # save SSM df as csv
 
 
