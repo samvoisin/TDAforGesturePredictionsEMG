@@ -126,6 +126,8 @@ def subj_SSM_mp(inp_lst):
 
 
 
+
+
 ################################################################################
 
 
@@ -133,10 +135,9 @@ if __name__ == "__main__":
 
     from time import time
 
-    to_dir = "./Data/EMG_data_for_gestures-SSMs/"
 
     print("Loading Data...\n")
-    gdat = load_data() # gestures data
+    gdat = load_data(["19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"]) # gestures data
     finps = [[sbj, sdict, to_dir, 2] for sbj, sdict in gdat.items()] # inp list
 
 

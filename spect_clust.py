@@ -8,10 +8,10 @@ import numpy as np
 import numpy.linalg as la
 import matplotlib.pyplot as plt
 import seaborn as sns
-import networkx as nx # draw graphs
 import plotly.express as px
 
 from sklearn.cluster import KMeans
+from sklearn.metrics.cluster import homogeneity_score
 
 
 def rbf_kern(v1, v2, scale):
@@ -35,14 +35,14 @@ def euclidian_kern(v1, v2, scale=1):
     return la.norm(v1-v2,ord=2)
 
 
-def form_wgt_mat(A, kern, scale, tol=1e-10):
+def form_wgt_mat(A, kern, scale):
     """
     generate weight matrix
+
     INPUT:
     pim vectors A
     kernel function
     gamma - scale parameter
-    tolerance - any weight below this value will be set to zero
     """
     (r, c) = A.shape
     wgt_mat = np.zeros(r * r).reshape(r, r)
@@ -99,36 +99,27 @@ if __name__ == "__main__":
     pim_vecs = pim_df.values[:, :-2]
     pim_df.gest = pim_df.gest.astype("int")
 
+    print("Generating weight matrix: ")
     W = form_wgt_mat(pim_vecs, rbf_kern, scale=1)
     D = np.diag(W.sum(axis=1))
     L = D - W # graph laplacian
 
     # http://papers.nips.cc/paper/2092-on-spectral-clustering-analysis-and-an-algorithm.pdf
-    D_hlf = la.inv(np.diag([(n)**0.5 for n in np.diag(D)]))
-    L_sym = D_hlf @ W @ D_hlf # symmetric normalized laplacian (w/o I - L)
+    #D_hlf = la.inv(np.diag([(n)**0.5 for n in np.diag(D)]))
+    #L_sym = D_hlf @ W @ D_hlf # symmetric normalized laplacian (w/o I - L)
 
     #evals, evecs = la.eig(L) # code for graph laplacian
-    evals, evecs = la.eig(L_sym) # code for symmetric normalized laplacian
+    evals, evecs = la.eig(L) # code for symmetric normalized laplacian
     eidx = np.argsort(evals.real)
     evecs = evecs.real[:, eidx]
     evals = evals.real[eidx]
 
     # plot first 20 eigenvalues: 0 = lambda_1 <= lambda_2 <= ... <= lambda_20
-    sns.scatterplot(range(20), evals[-1:-21:-1])
+    sns.scatterplot(range(20), evals[:20])
     plt.plot([0, 20], [0, 0], color="black", linestyle="--")
     plt.show()
 
-    #for i in range(-1,-7,-1):
-    #    plt.subplot(2, 3, i*-1)
-    #    sns.scatterplot(evecs[:,i],
-    #                    evecs[:,i+1],
-    #                    hue=pim_df.gest,
-    #                    palette="Set1")
-    #    plt.xlabel("EigVector " + str(i))
-    #    plt.ylabel("EigVector " + str(i+1))
-    #plt.show()
-
-    X = evecs[:, -1:-7:-1]
+    X = evecs[:, :7]
 
     # normalize rows of X
     for n, i in enumerate(X):
@@ -136,6 +127,8 @@ if __name__ == "__main__":
 
     kmeans = KMeans(n_clusters=6, precompute_distances=True)
     kmeans.fit_predict(X)
+
+    print(homogeneity_score(kmeans.labels_, pim_df["gest"]))
 
     c_comp = cluster_composition(kmeans.labels_, pim_df, "gest")
     print(c_comp)

@@ -14,13 +14,8 @@ import matplotlib.pyplot as plt
 
 pim_df = pd.read_csv("./pim_vectors_mp40.csv")
 
-
 pims = pim_df.values[:, :-2] # predictor vectors: persistence images (864x1600)
-plt.matshow(pims[40, :].reshape(40, 40))
-plt.show()
 ks.utils.normalize(pims, axis=-1, order=2) # normalize persistence images
-plt.matshow(pims[100, :].reshape(40, 40))
-plt.show()
 
 gests = pim_df.values[:, -2].astype("int64") # data labels: gesture numbers
 unq_gests = np.unique(gests).size
