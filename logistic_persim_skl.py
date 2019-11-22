@@ -25,6 +25,7 @@ pims = pim_df.values[:, :-2] # predictor vectors: persistence images (864xpx**2)
 gests = pim_df.values[:, -2].astype("int64") # data labels: gesture numbers
 unq_gests = np.unique(gests).size
 
+
 ######## train/ test split ########
 np.random.seed(1)
 pims_train, pims_test, gests_train, gests_test = train_test_split(
@@ -33,8 +34,8 @@ pims_train, pims_test, gests_train, gests_test = train_test_split(
     test_size=0.2,
     random_state=1)
 
-######## Logistic Regression ########
 
+######## Logistic Regression ########
 log_reg = LogisticRegression(
     penalty="l2",
     C=1e6,
@@ -48,9 +49,9 @@ log_reg.fit(pims_train, gests_train)
 
 log_reg.score(pims_test, gests_test)
 
-# save model
-with open("log_reg_skl.sav", "wb") as fh:
-    pickle.dump(log_reg, fh)
+## save model
+#with open("log_reg_skl.sav", "wb") as fh:
+#    pickle.dump(log_reg, fh)
 
 # code to load model
 #with open("log_reg_skl.sav", "rb") as fh:

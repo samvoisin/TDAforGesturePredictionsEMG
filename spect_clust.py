@@ -21,6 +21,13 @@ def rbf_kern(v1, v2, scale):
     return np.exp(la.norm(v1-v2, 2)**2 / -2*scale)
 
 
+def inf_norm(v1, v2, scale=1):
+    """
+    Linf norm between two vectors
+    """
+    return la.norm(v1-v2, ord=np.inf)
+
+
 def unweighted_kern(v1, v2, scale=1):
     """
     kernel function for unweighted graph
@@ -94,22 +101,18 @@ def cluster_composition(clabs, df, idcol):
 ################################################################################
 
 if __name__ == "__main__":
-    pim_df = pd.read_csv("./pim_vectors_mp40.csv")
-    #pim_df = pim_df.loc[pim_df.gest != 1.0, :]
+    pim_df = pd.read_csv("./pim_vectors_40.csv")
+    pim_df.gest = pim_df.gest.astype("category")
+    pim_df = pim_df.loc[pim_df.gest.isin([2,3]), :]
     pim_vecs = pim_df.values[:, :-2]
     pim_df.gest = pim_df.gest.astype("int")
 
     print("Generating weight matrix: ")
-    W = form_wgt_mat(pim_vecs, rbf_kern, scale=1)
+    W = form_wgt_mat(pim_vecs, inf_norm, scale=1)
     D = np.diag(W.sum(axis=1))
     L = D - W # graph laplacian
 
-    # http://papers.nips.cc/paper/2092-on-spectral-clustering-analysis-and-an-algorithm.pdf
-    #D_hlf = la.inv(np.diag([(n)**0.5 for n in np.diag(D)]))
-    #L_sym = D_hlf @ W @ D_hlf # symmetric normalized laplacian (w/o I - L)
-
-    #evals, evecs = la.eig(L) # code for graph laplacian
-    evals, evecs = la.eig(L) # code for symmetric normalized laplacian
+    evals, evecs = la.eig(L)
     eidx = np.argsort(evals.real)
     evecs = evecs.real[:, eidx]
     evals = evals.real[eidx]
@@ -119,11 +122,7 @@ if __name__ == "__main__":
     plt.plot([0, 20], [0, 0], color="black", linestyle="--")
     plt.show()
 
-    X = evecs[:, :7]
-
-    # normalize rows of X
-    for n, i in enumerate(X):
-        X[n, :] = i / la.norm(i, 2)
+    X = evecs[:, 1:3]
 
     kmeans = KMeans(n_clusters=6, precompute_distances=True)
     kmeans.fit_predict(X)
