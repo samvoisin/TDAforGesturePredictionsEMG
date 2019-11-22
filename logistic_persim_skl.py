@@ -15,10 +15,13 @@ import matplotlib.pyplot as plt
 
 
 pim_df = pd.read_csv("./pim_vectors_20.csv")
+pim_df.gest = pim_df.gest.astype("category")
+pim_df = pim_df.loc[pim_df.gest.isin([3,4]), :]
+
 
 pimsd = 1e-5
 px = 20
-pim = PersImage(pixels=[px,px], spread=pimsd)
+#pim = PersImage(pixels=[px,px], spread=pimsd)
 
 
 pims = pim_df.values[:, :-2] # predictor vectors: persistence images (864xpx**2)
@@ -59,7 +62,14 @@ log_reg.score(pims_test, gests_test)
 
 
 inverse_image = np.copy(log_reg.coef_).reshape(-1, px)
-for i in range(6):
-    pim.show(inverse_image[i*px:(i+1)*px, :])
-    plt.title("Inverse Persistence Image for Gesture: " + str(i+1))
-    plt.show()
+
+plt.matshow(inverse_image[:px, :])
+plt.show()
+
+#plt.matshow(inverse_image[px:, :])
+#plt.show()
+
+#for i in range(2):
+#    pim.show(inverse_image[i*px:(i+1)*px, :])
+#    plt.title("Inverse Persistence Image for Gesture: " + str(i+1))
+#    plt.show()
