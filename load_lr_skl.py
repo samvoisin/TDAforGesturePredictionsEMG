@@ -9,8 +9,6 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 
-pim_df = pd.read_csv("./pim_vectors_20.csv")
-
 pimsd = 1e-5
 px = 20
 pim = PersImage(pixels=[px,px], spread=pimsd)
