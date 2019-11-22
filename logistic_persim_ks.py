@@ -7,12 +7,12 @@ import numpy as np
 import pandas as pd
 import keras as ks
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Conv2D
 from keras.optimizers import Nadam
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
-pim_df = pd.read_csv("./pim_vectors_mp40.csv")
+pim_df = pd.read_csv("./pim_vectors_20.csv")
 
 pims = pim_df.values[:, :-2] # predictor vectors: persistence images (864x1600)
 ks.utils.normalize(pims, axis=-1, order=2) # normalize persistence images
@@ -32,8 +32,9 @@ pims_train, pims_test, gests_train, gests_test = train_test_split(
 
 
 #### Computational Graph ####
+
 batch = 1
-inp_shape_x = (1600,)
+inp_shape_x = (400,)
 
 log_reg = Sequential()
 
@@ -46,13 +47,6 @@ log_reg.add(Dense(
 
 print(log_reg.summary())
 
-ks.utils.plot_model(
-    log_reg,
-    to_file='model.png',
-    show_shapes=True)
-
-# compile model w/ NAG optimizer: https://dominikschmidt.xyz/nesterov-momentum/
-#nest = Nadam(lr = 0.005)
 log_reg.compile(
     optimizer = "sgd", # switched to sgd for test
     loss = "categorical_crossentropy",
@@ -63,7 +57,7 @@ history = log_reg.fit(
     x=pims_train,
     y=gests_train,
     batch_size=batch,
-    epochs=10,
+    epochs=50,
     validation_split=0.2,
     verbose=True)
 
@@ -80,3 +74,13 @@ plt.show()
 score = log_reg.evaluate(pims_test, gests_test, verbose=True)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
+
+layer = log_reg.layers
+dense_layer = layer[0].get_weights()
+
+params = dense_layer[0]
+param_dim = params.shape
+
+for i in range(param_dim[1]):
+    plt.imshow(params[:, i].reshape(-1, 20))
+    plt.show()
