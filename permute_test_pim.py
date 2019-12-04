@@ -30,7 +30,7 @@ log_reg = LogisticRegression(
     C=1e6,
     solver="newton-cg",
     fit_intercept=True,
-    max_iter=10000,
+    max_iter=100,
     multi_class="multinomial",
     random_state=1)
 
@@ -47,12 +47,8 @@ for train_idx, test_idx in skf.split(pims, gests):
 
 
 ########## now compute accuracy score with randomly permuted labels ############
-
-perm_gests = gests[choice(
-    np.arange(gests.size),
-    size = gests.size,
-    replace = False)
-    ]
+perms = choice(np.arange(gests.size), size = gests.size, replace = False)
+perm_gests = gests[perms]
 
 fold_acc_perm = np.zeros((1, s))
 f = 0
