@@ -59,7 +59,7 @@ for train_idx, test_idx in skf.split(pims, perm_gests):
     f += 1
 
 
-scores = np.r_[fold_acc, fold_acc_perm]
+scores = np.r_[fold_acc, fold_acc_perm].reshape(2, -1)
 print(scores)
 
 print("Avg Accuracy:")
