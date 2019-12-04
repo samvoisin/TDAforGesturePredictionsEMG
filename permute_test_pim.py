@@ -30,7 +30,7 @@ log_reg = LogisticRegression(
     C=1e6,
     solver="newton-cg",
     fit_intercept=True,
-    max_iter=1500,
+    max_iter=10000,
     multi_class="multinomial",
     random_state=1)
 
@@ -42,7 +42,7 @@ f = 0
 for train_idx, test_idx in skf.split(pims, gests):
     print("Fold number " + str(f), end="\r")
     log_reg.fit(pims[train_idx, ], gests[train_idx])
-    fold_acc_perm[1, f] = log_reg.score(pims[test_idx, ], gests[test_idx])
+    fold_acc[1, f] = log_reg.score(pims[test_idx, ], gests[test_idx])
     f += 1
 
 
