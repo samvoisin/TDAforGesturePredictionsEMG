@@ -42,11 +42,12 @@ f = 0
 for train_idx, test_idx in skf.split(pims, gests):
     print("Fold number " + str(f), end="\r")
     log_reg.fit(pims[train_idx, ], gests[train_idx])
-    fold_acc[1, f] = log_reg.score(pims[test_idx, ], gests[test_idx])
+    fold_acc[f] = log_reg.score(pims[test_idx, ], gests[test_idx])
     f += 1
 
 
 ########## now compute accuracy score with randomly permuted labels ############
+
 perm_gests = gests[choice(
     np.arange(gests.size),
     size = gests.size,
@@ -58,7 +59,7 @@ f = 0
 for train_idx, test_idx in skf.split(pims, perm_gests):
     print("Fold number " + str(f), end="\r")
     log_reg.fit(pims[train_idx, ], perm_gests[train_idx])
-    fold_acc_perm[1, f] = log_reg.score(pims[test_idx, ], perm_gests[test_idx])
+    fold_acc_perm[f] = log_reg.score(pims[test_idx, ], perm_gests[test_idx])
     f += 1
 
 
