@@ -37,7 +37,7 @@ log_reg = LogisticRegression(
 s = 5 # number of CV folds
 skf = StratifiedKFold(n_splits = s, random_state = 1, shuffle = True)
 
-fold_acc = np.zeros((1, s))
+fold_acc = np.zeros(s)
 f = 0
 for train_idx, test_idx in skf.split(pims, gests):
     print("Fold number " + str(f), end="\r")
@@ -50,7 +50,7 @@ for train_idx, test_idx in skf.split(pims, gests):
 perms = choice(np.arange(gests.size), size = gests.size, replace = False)
 perm_gests = gests[perms]
 
-fold_acc_perm = np.zeros((1, s))
+fold_acc_perm = np.zeros(s)
 f = 0
 for train_idx, test_idx in skf.split(pims, perm_gests):
     print("Fold number " + str(f), end="\r")
