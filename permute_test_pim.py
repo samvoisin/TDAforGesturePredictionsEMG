@@ -25,7 +25,7 @@ log_reg = LogisticRegression(
     C=1e6,
     solver="newton-cg",
     fit_intercept=True,
-    max_iter=1000,
+    max_iter=7000,
     multi_class="multinomial",
     random_state=1)
 
@@ -46,7 +46,7 @@ fold_acc = fold_acc.reshape(1, s)
 ########## now compute accuracy score with randomly permuted labels ############
 np.random.seed(1)
 
-pitrs = 10 # number of permutation iterations
+pitrs = 1000 # number of permutation iterations
 fold_acc_perm = np.zeros((pitrs, s))
 
 for i in range(pitrs):
