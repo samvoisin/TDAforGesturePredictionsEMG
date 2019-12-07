@@ -40,22 +40,46 @@ class DataCube:
         if subject number is specified [list type] load only that subject(s)
         if gesture is specified [list type] load only that (those) gesture(s)
         """
-        # generate data dict {subject : {gesture : array}}
-        for s in self.subjects:
-            self.data_set[s] = {}
-            dir_root = self.subj_lvl_dir+s+"/" # directory root
-            for f in os.listdir(dir_root):
-                if f[0] in self.gestures:
+        if self.data_grp == "parsed":
+            # generate data dict {subject : {gesture : array}}
+            for s in self.subjects:
+                self.data_set[s] = {}
+                dir_root = self.subj_lvl_dir+s+"/" # directory root
+                for f in os.listdir(dir_root):
+                    if f[0] in self.gestures: # if a file exists in directory
+                        with open(dir_root+f, "r") as fh:
+                            # f[0:5] is gest_performance(0 or 1)_file(1 or 2)
+                            self.data_set[s][f[0:5]] = np.loadtxt(
+                                fh,
+                                delimiter=",",
+                                skiprows=1)
+            self.gest_aliases = self.data_set[s].keys()
+
+        elif self.data_grp == "master":
+            for s in self.subjects:
+                self.data_set[s] = {}
+                dir_root = self.subj_lvl_dir+s+"/" # directory root
+                for f in os.listdir(dir_root):
                     with open(dir_root+f, "r") as fh:
-                        # f[0:5] is gest_performance(0 or 1)_file(1 or 2)
-                        self.data_set[s][f[0:5]] = np.loadtxt(
-                            fh,
-                            delimiter=",",
-                            skiprows=1)
-        self.gest_aliases = self.data_set[s].keys()
+                        self.data_set[s][f] = np.loadtxt(
+                        fh,
+                        skiprows=1
+                        )
+
+
         self.loaded_flg = True # set loaded flag to True
 
 
+
+
+
+
+
 if __name__ == "__main__":
-    dc = DataCube(subjects="all", gestures="all", data_grp="parsed")
+    dc = DataCube(subjects=["10", "20"], gestures="all", data_grp="master")
     dc.load_data()
+    for k, v in dc.data_set.items():
+        print(k)
+        for f, d in v.items():
+            print(f)
+            print(d)
