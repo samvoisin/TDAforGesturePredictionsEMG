@@ -12,7 +12,12 @@ class DataCube:
     DataCube class designed for loading and managing data set
     """
 
-    def __init__(self, subjects="all", gestures="all", data_grp="parsed"):
+    def __init__(
+        self,
+        subjects="all",
+        gestures="all",
+        channels="all",
+        data_grp="parsed"):
         """
         load data group from master (i.e. raw) or parsed set
         if subject number is specified [list type] load only that subject(s)
@@ -32,6 +37,11 @@ class DataCube:
             self.gestures = ["1", "2", "3", "4", "5", "6"]
         else:
             self.gestures = gestures
+        # specify channels
+        if channels == "all":
+            self.channels = [i for i in range(1,9)]
+        else:
+            self.channels = [int(i) for i in channels]
 
 
     def load_data(self):
@@ -53,7 +63,15 @@ class DataCube:
                                 fh,
                                 delimiter=",",
                                 skiprows=1)
-            self.gest_aliases = self.data_set[s].keys()
+                            # remove unspecified channels
+                            rm_ch = [i for i in range(1,9) if i not in self.channels]
+                            rm_ch.reverse() # rev removal channels for del order
+                            for c in rm_ch:
+                                # delete c^th column of array
+                                self.data_set[s][f[0:5]] = (
+                                    np.delete(self.data_set[s][f[0:5]], c, 1)
+                                    )
+            #self.gest_aliases = self.data_set[s].keys()
 
         elif self.data_grp == "master":
             for s in self.subjects:
@@ -61,25 +79,21 @@ class DataCube:
                 dir_root = self.subj_lvl_dir+s+"/" # directory root
                 for f in os.listdir(dir_root):
                     with open(dir_root+f, "r") as fh:
-                        self.data_set[s][f] = np.loadtxt(
-                        fh,
-                        skiprows=1
-                        )
-
+                        # f[0] is file num (1 or 2)
+                        self.data_set[s][f[0]] = np.loadtxt(fh, skiprows=1)
+                        # remove unspecified channels
+                        rm_ch = [i for i in range(1,9) if i not in self.channels]
+                        rm_ch.reverse() # rev removal channels for del order
+                        for c in rm_ch:
+                            # delete c^th column of array
+                            self.data_set[s][f[0]] = (
+                                np.delete(self.data_set[s][f[0]], c, 1)
+                                )
 
         self.loaded_flg = True # set loaded flag to True
-
-
-
-
 
 
 
 if __name__ == "__main__":
     dc = DataCube(subjects=["10", "20"], gestures="all", data_grp="master")
     dc.load_data()
-    for k, v in dc.data_set.items():
-        print(k)
-        for f, d in v.items():
-            print(f)
-            print(d)
