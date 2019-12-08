@@ -53,6 +53,7 @@ class DataCube:
         if self.data_grp == "parsed":
             # generate data dict {subject : {gesture : array}}
             for s in self.subjects:
+                print(2)
                 self.data_set[s] = {}
                 dir_root = self.subj_lvl_dir+s+"/" # directory root
                 for f in os.listdir(dir_root):

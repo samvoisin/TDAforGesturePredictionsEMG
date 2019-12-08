@@ -11,7 +11,9 @@ import multiprocessing as mp
 from ripser import ripser, Rips
 from persim import plot_diagrams, PersImage
 
-from TDA_helper_fcns import load_data, sublevel_set_time_series_dist
+from data_cube import DataCube
+#from TDA_helper_fcns import load_data, sublevel_set_time_series_dist
+
 
 
 ########################## parallel helper functions ###########################
@@ -50,9 +52,16 @@ def subj_to_pims(sbj, sdict, px, sd):
 
 if __name__ == "__main__":
 
-    gdat = load_data() # gestures data
-    nvects = len(gdat.keys()) * 24 # each subject performs 24 total gestures
-    pim_px = 40 # persistence image dims (square)
+    dc = DataCube(
+        subjects="all",
+        gestures=["1", "2", "3", "4"],
+        channels=["2", "4", "5", "6", "8"],
+        data_grp="parsed"
+        )
+    dc.load_data()
+
+    nvects = len(dc.data_set.keys()) * 24 # each subj performs 24 total gests
+    pim_px = 20 # persistence image dims (square)
     pim_sd = 1e-5 # persistence image st. dev.
 
     # vects have equal # persim pix + 2 cols for subj & gest labels
@@ -63,7 +72,7 @@ if __name__ == "__main__":
 
     par_res = [
     pool.apply_async(subj_to_pims, args=(sbj, sdict, pim_px, pim_sd)
-    ) for sbj, sdict in gdat.items()
+    ) for sbj, sdict in dc.data_set.items()
     ]
 
     pool.close()
@@ -80,4 +89,4 @@ if __name__ == "__main__":
     cnames = ["px"+str(i) for i in pim_df.columns]
     cnames[-2:] = ["gest", "subj"]
     pim_df.columns = cnames
-    pim_df.to_csv("./pim_vectors_mp40.csv", index=False)
+    pim_df.to_csv("./pim_vectors_mp20_sbst.csv", index=False)
