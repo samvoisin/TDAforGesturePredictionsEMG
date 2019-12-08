@@ -89,9 +89,32 @@ class DataCube:
                             self.data_set[s][f[0]] = (
                                 np.delete(self.data_set[s][f[0]], c, 1)
                                 )
+        # set loaded flag to True
+        self.loaded_flg = True
 
-        self.loaded_flg = True # set loaded flag to True
 
+    def get_max_obs(self):
+        """
+        find maximum number of observations in loaded data set
+        to be used for interpolation
+        """
+        self.max_obs = 0
+        for s, gdict in self.data_set.items():
+            for g, a in gdict.items():
+                if self.max_obs < a[:, 0].size: # if current max < nrow
+                    self.max_obs = a[:, 0].size # update current max
+
+
+    def get_min_obs(self):
+        """
+        find maximum number of observations in loaded data set
+        to be used for interpolation
+        """
+        self.min_obs = np.inf
+        for s, gdict in self.data_set.items():
+            for g, a in gdict.items():
+                if self.min_obs > a[:, 0].size: # if current min > nrow
+                    self.min_obs = a[:, 0].size # update current min
 
 
 if __name__ == "__main__":
