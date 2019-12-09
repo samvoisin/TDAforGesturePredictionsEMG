@@ -14,14 +14,9 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 
-pim_df = pd.read_csv("./pim_vectors_20.csv")
+pim_df = pd.read_csv("./pim_vectors_mp20_sbst.csv")
 pim_df.gest = pim_df.gest.astype("category")
-pim_df = pim_df.loc[pim_df.gest.isin([3,4]), :]
-
-
-pimsd = 1e-5
-px = 20
-#pim = PersImage(pixels=[px,px], spread=pimsd)
+#pim_df = pim_df.loc[pim_df.gest.isin([3,4]), :] # subset the pims
 
 
 pims = pim_df.values[:, :-2] # predictor vectors: persistence images (864xpx**2)
@@ -50,26 +45,25 @@ log_reg = LogisticRegression(
 
 log_reg.fit(pims_train, gests_train)
 
-log_reg.score(pims_test, gests_test)
+oos_acc = log_reg.score(pims_test, gests_test)
 
 ## save model
-#with open("log_reg_skl.sav", "wb") as fh:
-#    pickle.dump(log_reg, fh)
+with open("./saved_models/log_reg_skl.sav", "wb") as fh:
+    pickle.dump(log_reg, fh)
 
 # code to load model
 #with open("log_reg_skl.sav", "rb") as fh:
 #   log_reg = pickle.load(fh)
 
+##### Inverse Image of Regression Coefficients #####
+
+pimsd = 1e-5
+px = 20
+pim = PersImage(pixels=[px,px], spread=pimsd)
 
 inverse_image = np.copy(log_reg.coef_).reshape(-1, px)
 
-plt.matshow(inverse_image[:px, :])
-plt.show()
-
-#plt.matshow(inverse_image[px:, :])
-#plt.show()
-
-#for i in range(2):
-#    pim.show(inverse_image[i*px:(i+1)*px, :])
-#    plt.title("Inverse Persistence Image for Gesture: " + str(i+1))
-#    plt.show()
+for i in range(5):
+    pim.show(inverse_image[i*px:(i+1)*px, :])
+    plt.title("Inverse Persistence Image for Gesture: " + str(i+1))
+    plt.show()
