@@ -1,0 +1,3 @@
+1) myo_armband: https://gadgetsin.com/myo-gesture-motion-control-armband.htm
+2) emg_sensors: http://www.biometricsltd.com/surface-emg-sensor.htm
+3) emg_output: https://people.ece.cornell.edu/land/courses/ece5030/FinalProjects/s2013/prd47_nlm9_rk447/Capacitive%20EMG%20electrode/pic1.jpg
