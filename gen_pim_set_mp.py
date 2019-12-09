@@ -60,9 +60,12 @@ if __name__ == "__main__":
         )
     dc.load_data()
 
-    nvects = len(dc.data_set.keys()) * 24 # each subj performs 24 total gests
+    ns = len(dc.subjects)
+    ng = len(dc.gestures) # number of gestures
+
+    nvects = len(dc.data_set.keys()) * ng # each subj performs 24 total gests
     pim_px = 20 # persistence image dims (square)
-    pim_sd = 1e-4 # persistence image st. dev.
+    pim_sd = 1e-5 # persistence image st. dev.
 
     # vects have equal # persim pix + 2 cols for subj & gest labels
     matsize = pim_px**2*nvects + 2*nvects
@@ -81,12 +84,12 @@ if __name__ == "__main__":
     # stack persistence image vectors
     r = 0
     for i in par_res:
-        pim_mat[r:r+24, :] = i.get()
-        r += 24
+        pim_mat[r:r+ng, :] = i.get()
+        r += ng
 
     # save matrix as DataFrame
     pim_df = pd.DataFrame(pim_mat)
     cnames = ["px"+str(i) for i in pim_df.columns]
     cnames[-2:] = ["gest", "subj"]
     pim_df.columns = cnames
-    pim_df.to_csv("./pim_vectors_mp20_sbst_chsprd.csv", index=False)
+    pim_df.to_csv("./pim_vectors_mp20_sbst.csv", index=False)
