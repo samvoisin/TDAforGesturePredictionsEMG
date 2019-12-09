@@ -30,9 +30,9 @@ pims_train, pims_test, gests_train, gests_test = train_test_split(
 
 ######## Logistic Regression ########
 log_reg = LogisticRegression(
-    penalty="l2",
-    C=1e6,
-    solver="newton-cg",
+    penalty="l1",
+    #C=1e6, DO SOME TESTING HERE!!!!!!!
+    solver="saga",
     fit_intercept=True,
     max_iter=5000,
     multi_class="multinomial",
@@ -44,7 +44,7 @@ oos_acc = log_reg.score(pims_test, gests_test)
 print(f"Accuracy: {oos_acc * 100}%")
 
 ## save model
-with open("./saved_models/log_reg_skl.sav", "wb") as fh:
+with open("./saved_models/lasso_skl.sav", "wb") as fh:
     pickle.dump(log_reg, fh)
 
 # code to load model
@@ -62,4 +62,5 @@ inverse_image = np.copy(log_reg.coef_).reshape(-1, px)
 for i in range(4):
     pim.show(inverse_image[i*px:(i+1)*px, :])
     plt.title("Inverse Persistence Image for Gesture: " + str(i+1))
-    plt.savefig("./figures/pres_figs/logreg_inv_img_g"+str(i+1)+".png")
+    plt.show()
+    #plt.savefig("./figures/pres_figs/lasso_inv_img_g"+str(i+1)+".png")
