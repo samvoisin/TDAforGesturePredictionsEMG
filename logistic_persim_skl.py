@@ -46,10 +46,11 @@ log_reg = LogisticRegression(
 log_reg.fit(pims_train, gests_train)
 
 oos_acc = log_reg.score(pims_test, gests_test)
+print(f"Accuracy: {oos_acc * 100}%")
 
 ## save model
-with open("./saved_models/log_reg_skl.sav", "wb") as fh:
-    pickle.dump(log_reg, fh)
+#with open("./saved_models/log_reg_skl.sav", "wb") as fh:
+#    pickle.dump(log_reg, fh)
 
 # code to load model
 #with open("log_reg_skl.sav", "rb") as fh:
