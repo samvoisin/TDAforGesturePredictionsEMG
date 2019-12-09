@@ -12,7 +12,7 @@ import plotly.express as px
 
 from sklearn.manifold import MDS
 
-################################################################################
+########################## Multi-Dimensional Scaling ###########################
 
 pim_df = pd.read_csv("./pim_vectors_mp40.csv")
 
@@ -27,7 +27,7 @@ mds_df.gest = mds_df.gest.astype("category")
 fig = px.scatter_3d(mds_df, x='V1', y='V2', z='V3', color='gest')
 fig.show()
 
-####################### Visualizing Priciple Components ########################
+####################### Principal Components Analaysis #########################
 
 pim_df = pd.read_csv("./pim_vectors_mp40.csv")
 pim_df = pim_df.loc[pim_df.gest.isin([5, 6]), :]

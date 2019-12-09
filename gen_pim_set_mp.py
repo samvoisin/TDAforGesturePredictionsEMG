@@ -23,7 +23,7 @@ def subj_to_pims(sbj, sdict, px, sd):
     generate persistence images for all gestures for a given subject
     INPUTS
     sbj - subject number
-    sdict - dict of all gestures performed by a subject; 24 per subject
+    sdict - dict of gestures performed by a subject
     px - pixel dimension/ resolution; e.g. px=20 gives 20x20 persistence image
     sd - persistence image concentration parameter (gaussian)
 
@@ -61,8 +61,8 @@ if __name__ == "__main__":
     dc.load_data()
 
     nvects = len(dc.data_set.keys()) * 24 # each subj performs 24 total gests
-    pim_px = 20 # persistence image dims (square)
-    pim_sd = 1e-5 # persistence image st. dev.
+    pim_px = 40 # persistence image dims (square)
+    pim_sd = 1e-4 # persistence image st. dev.
 
     # vects have equal # persim pix + 2 cols for subj & gest labels
     matsize = pim_px**2*nvects + 2*nvects
