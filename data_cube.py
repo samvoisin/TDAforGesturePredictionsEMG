@@ -5,6 +5,7 @@
 
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 
 
 class DataCube:
@@ -117,6 +118,87 @@ class DataCube:
                     self.min_obs = a[:, 0].size # update current min
 
 
+    def plot_gests(self, subj, g, chans="all", save=False, path=None):
+        """
+        Example input: plot_gests("30", "3_1_2", thrty, signals=[1, 2, 3, 5, 8])
+        create plots of data for a given subject (subj) - type == str
+        and gesture (g) - array in subject dict (e.g. (3_0, 3_1, 6_1. etc.))
+        subj_dict - dict containing data from one more more subj (key == subj #)
+        signals - specify which signals; default is all
+        save gestures to file path tbd
+        """
+        # fix list of available colors
+        colors = ('blue','green','crimson',
+                  'purple', 'black', 'orange',
+                  'firebrick', 'gold','forestgreen')
+
+        if chans == "all":
+            chans = self.channels
+        else:
+            chans = [int(i) for i in chans]
+
+        time_ser = self.data_set[subj][g][:, 0]
+
+        ### single plot code ###
+        # if one signal specified no subplots necessary
+        if type(chans) == int or len(chans) == 1:
+            plt.plot(
+            time_ser,
+            self.data_set[subj][g][:, chans]
+            )
+            plt.title("Subject "+subj+"; Gesture "+g+"; Channel "+str(chans))
+            plt.xlabel("ms")
+            plt.ylabel("Amplitude")
+            plt.show()
+
+        ### subplots code ###
+        n_chan = len(chans)
+        # 4 or fewer signals needs 1 col only
+        if n_chan <= 4:
+            fig, ax = plt.subplots(ncols=1, nrows=n_sig, sharex=True)
+
+            clr = 0 # color and signal selector
+            for n, i in enumerate(chans):
+                ax[n].set_title("Channel "+str(i))
+                ax[n].plot(
+                    time_ser,
+                    self.data_set[subj][g][:, i],
+                    color=colors[clr]
+                    )
+                clr += 1
+                if clr == n_chan:
+                    fig.suptitle("Subject "+subj+"; Gesture "+g)
+                    # return subplots for <= 4 signals
+                    plt.show()
+
+    	# 5 or more signals gets 2 columns
+        n_sbplts = n_chan
+        if n_sbplts%2 != 0: n_sbplts += 1
+        n_r = n_sbplts//2
+        n_c = 2 # always 2 cols
+
+        fig, ax = plt.subplots(ncols=n_c, nrows=n_r, sharex=True)
+
+        clr = 0
+        for i in range(n_r):
+            for j in range(n_c):
+                ax[i, j].set_title("Channel "+str(chans[clr]))
+                ax[i, j].plot(
+                    time_ser,
+                    self.data_set[subj][g][:, clr+1],
+                    color=colors[clr]
+                    )
+                clr += 1
+                if clr >= n_chan:
+                    break
+        fig.suptitle("Subject "+subj+"; Gesture "+g)
+        # return subplots for > 4 signals
+        if save:
+            plt.savefig(path)
+        else:
+            plt.show()
+
+
 if __name__ == "__main__":
-    dc = DataCube(subjects=["10", "20"], gestures="all", data_grp="master")
+    dc = DataCube(subjects=["10", "20"], gestures="all", data_grp="parsed")
     dc.load_data()
