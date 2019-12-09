@@ -61,7 +61,7 @@ if __name__ == "__main__":
     dc.load_data()
 
     nvects = len(dc.data_set.keys()) * 24 # each subj performs 24 total gests
-    pim_px = 40 # persistence image dims (square)
+    pim_px = 20 # persistence image dims (square)
     pim_sd = 1e-4 # persistence image st. dev.
 
     # vects have equal # persim pix + 2 cols for subj & gest labels
@@ -89,4 +89,4 @@ if __name__ == "__main__":
     cnames = ["px"+str(i) for i in pim_df.columns]
     cnames[-2:] = ["gest", "subj"]
     pim_df.columns = cnames
-    pim_df.to_csv("./pim_vectors_mp40_sbst.csv", index=False)
+    pim_df.to_csv("./pim_vectors_mp20_sbst_chsprd.csv", index=False)
