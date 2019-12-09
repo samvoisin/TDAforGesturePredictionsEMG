@@ -18,7 +18,7 @@ from data_cube import DataCube
 
 ########################## parallel helper functions ###########################
 
-def subj_to_pims(sbj, sdict, px, sd):
+def subj_to_pims(sbj, sdict, px, sd, nobs):
     """
     generate persistence images for all gestures for a given subject
     INPUTS
@@ -26,6 +26,7 @@ def subj_to_pims(sbj, sdict, px, sd):
     sdict - dict of gestures performed by a subject
     px - pixel dimension/ resolution; e.g. px=20 gives 20x20 persistence image
     sd - persistence image concentration parameter (gaussian)
+    nobs - number of observations per subj (total num of gests they performed)
 
     OUTPUTS
     array of gestures made by subject
@@ -33,7 +34,6 @@ def subj_to_pims(sbj, sdict, px, sd):
     # instantiate persistence image generator & vietoris-rips complex generators
     rips = Rips(maxdim=1, verbose=False) # 1-D homology rips complex
     pim = PersImage(pixels=[px,px], spread=sd)
-    nobs = 24 # each subject performs 24 gestures
     # each vector have equal # persim pix + 2 cols for subj & gest labels
     res_mat = np.zeros(px**2*nobs + 2*nobs).reshape(nobs, -1)
 
@@ -53,7 +53,7 @@ def subj_to_pims(sbj, sdict, px, sd):
 if __name__ == "__main__":
 
     dc = DataCube(
-        subjects="all",
+        subjects= "all",
         gestures=["1", "2", "3", "4"],
         channels=["2", "4", "5", "6", "8"],
         data_grp="parsed"
@@ -63,7 +63,8 @@ if __name__ == "__main__":
     ns = len(dc.subjects)
     ng = len(dc.gestures) # number of gestures
 
-    nvects = len(dc.data_set.keys()) * ng # each subj performs 24 total gests
+    nobs_sbj = ng*4
+    nvects = ns * nobs_sbj # each subj performs each gesture 4x
     pim_px = 20 # persistence image dims (square)
     pim_sd = 1e-5 # persistence image st. dev.
 
@@ -74,7 +75,7 @@ if __name__ == "__main__":
     pool = mp.Pool(6) # specify number of CPU cores
 
     par_res = [
-    pool.apply_async(subj_to_pims, args=(sbj, sdict, pim_px, pim_sd)
+    pool.apply_async(subj_to_pims, args=(sbj, sdict, pim_px, pim_sd, nobs_sbj)
     ) for sbj, sdict in dc.data_set.items()
     ]
 
@@ -84,8 +85,8 @@ if __name__ == "__main__":
     # stack persistence image vectors
     r = 0
     for i in par_res:
-        pim_mat[r:r+ng, :] = i.get()
-        r += ng
+        pim_mat[r:r+nobs_sbj, :] = i.get()
+        r += nobs_sbj
 
     # save matrix as DataFrame
     pim_df = pd.DataFrame(pim_mat)

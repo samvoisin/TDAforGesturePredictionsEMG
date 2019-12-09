@@ -14,7 +14,7 @@ from sklearn.manifold import MDS
 
 ########################## Multi-Dimensional Scaling ###########################
 
-pim_df = pd.read_csv("./pim_vectors_mp40.csv")
+pim_df = pd.read_csv("./pim_vectors_mp20_sbst.csv")
 
 mds = MDS(3, metric=True)
 embed = mds.fit_transform(pim_df.values[:, :-2])
@@ -29,7 +29,7 @@ fig.show()
 
 ####################### Principal Components Analaysis #########################
 
-pim_df = pd.read_csv("./pim_vectors_mp40.csv")
+pim_df = pd.read_csv("./pim_vectors_mp20_sbst.csv")
 pim_df = pim_df.loc[pim_df.gest.isin([5, 6]), :]
 
 pims = pim_df.values[:, :-2] # persistence image vectors
