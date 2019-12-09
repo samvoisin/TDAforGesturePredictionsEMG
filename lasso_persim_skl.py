@@ -5,13 +5,13 @@ import pickle
 from persim import PersImage
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
+#from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
 import matplotlib.pyplot as plt
 
 
 pim_df = pd.read_csv("./pim_vectors_mp20_sbst.csv")
 pim_df.gest = pim_df.gest.astype("category")
-#pim_df = pim_df.loc[pim_df.gest.isin([3,4]), :] # subset the pims
 
 
 pims = pim_df.values[:, :-2] # predictor vectors: persistence images (864xpx**2)
@@ -19,48 +19,41 @@ gests = pim_df.values[:, -2].astype("int64") # data labels: gesture numbers
 unq_gests = np.unique(gests).size
 
 
-######## train/ test split ########
+# stratified kfold
+skf = StratifiedKFold(n_splits=5, shuffle=True)
+
+
+
+fit_mat = np.zeros(200*2).reshape(-1, 2) # store C values and avg acc score
+
 np.random.seed(1)
-pims_train, pims_test, gests_train, gests_test = train_test_split(
-    pims,
-    gests,
-    test_size=0.2,
-    random_state=1)
+for n, lbda in enumerate(range(1, 1001, 5)):
+    fv_acc = [] # store acc for each fold
+    for trn_idx, tst_idx in skf.split(pims, gests):
+        pims_trn, pims_tst = pims[trn_idx, :], pims[tst_idx, :]
+        gests_trn, gests_tst = gests[trn_idx], gests[tst_idx]
 
+        lasso_reg = LogisticRegression(
+            penalty="l1",
+            C=lbda,
+            solver="saga",
+            fit_intercept=True,
+            max_iter=5000,
+            multi_class="multinomial",
+            random_state=1)
 
-######## Logistic Regression ########
-log_reg = LogisticRegression(
-    penalty="l1",
-    #C=1e6, DO SOME TESTING HERE!!!!!!!
-    solver="saga",
-    fit_intercept=True,
-    max_iter=5000,
-    multi_class="multinomial",
-    random_state=1)
+        lasso_reg.fit(pims_trn, gests_trn) # fit the model
 
-log_reg.fit(pims_train, gests_train)
+        # append score for fold
+        fv_acc.append(lasso_reg.score(pims_tst, gests_tst))
 
-oos_acc = log_reg.score(pims_test, gests_test)
-print(f"Accuracy: {oos_acc * 100}%")
+    acc = sum(fv_acc) / 5 # avg acc
+
+    fit_mat[n, :] = np.array([lbda, acc])
+
+plt.scatter(fit_mat[:, 0], fit_mat[:, 1])
+plt.savefig("./fitlasso.png")
 
 ## save model
-with open("./saved_models/lasso_skl.sav", "wb") as fh:
-    pickle.dump(log_reg, fh)
-
-# code to load model
-#with open("log_reg_skl.sav", "rb") as fh:
-#   log_reg = pickle.load(fh)
-
-##### Inverse Image of Regression Coefficients #####
-
-pimsd = 1e-5
-px = 20
-pim = PersImage(pixels=[px,px], spread=pimsd)
-
-inverse_image = np.copy(log_reg.coef_).reshape(-1, px)
-
-for i in range(4):
-    pim.show(inverse_image[i*px:(i+1)*px, :])
-    plt.title("Inverse Persistence Image for Gesture: " + str(i+1))
-    plt.show()
-    #plt.savefig("./figures/pres_figs/lasso_inv_img_g"+str(i+1)+".png")
+#with open("./saved_models/lasso_skl.sav", "wb") as fh:
+#    pickle.dump(lasso_reg, fh)
