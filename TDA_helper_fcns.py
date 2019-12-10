@@ -68,7 +68,7 @@ def get_max_perf_time(gdat):
             # update if current nrows in current u is greater than stored value
             if u.shape[0] > sdict[gid]:
                 sdict[gid] = u.shape[0]
-                
+
     return sdict
 
 
@@ -93,7 +93,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
         subj_dict[subj][g][:, 0],
         subj_dict[subj][g][:, signals]
         )
-        plt.title("Subject "+subj+"; Gesture "+g+"; Channel "+str(signals))
+        plt.title("Subject "+subj+"; Gesture "+g[0]+"; Channel "+str(signals))
         plt.xlabel("ms")
         plt.ylabel("Amplitude")
         return
@@ -114,7 +114,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
                 )
             clr += 1
             if clr == n_sig:
-                fig.suptitle("Subject "+subj+"; Gesture "+g)
+                fig.suptitle("Subject "+subj+"; Gesture "+g[0])
                 # return subplots for <= 4 signals
                 return
 
@@ -137,7 +137,7 @@ def plot_gests(subj, g, subj_dict, signals=range(1,9), save=False, path=None):
                 )
             clr += 1
             if clr >= n_sig:
-                fig.suptitle("Subject "+subj+"; Gesture "+g)
+                fig.suptitle("Subject "+subj+"; Gesture "+g[0])
                 # return subplots for > 4 signals
                 return
 
@@ -223,7 +223,6 @@ def bottleneck_dist_mat(gdat, verbose=True):
 
 
 if __name__ == "__main__":
-    thrty=load_data(subjects=["30"])
-    plot_gests("30", "3_1_2", thrty)
-
+    thrty=load_data(subjects=["20"])
+    plot_gests("20", "3_0_2", thrty, signals=[2, 4, 5, 6])
     plt.show()

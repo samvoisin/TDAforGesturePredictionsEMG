@@ -14,7 +14,7 @@ from sklearn.manifold import MDS
 
 ########################## Multi-Dimensional Scaling ###########################
 
-pim_df = pd.read_csv("./pim_vectors_mp40.csv")
+pim_df = pd.read_csv("./pim_vectors_mp20_sbst.csv")
 
 mds = MDS(3, metric=True)
 embed = mds.fit_transform(pim_df.values[:, :-2])
@@ -28,9 +28,6 @@ fig = px.scatter_3d(mds_df, x='V1', y='V2', z='V3', color='gest')
 fig.show()
 
 ####################### Principal Components Analaysis #########################
-
-pim_df = pd.read_csv("./pim_vectors_mp40.csv")
-pim_df = pim_df.loc[pim_df.gest.isin([5, 6]), :]
 
 pims = pim_df.values[:, :-2] # persistence image vectors
 pimcov = pims.T @ pims
@@ -46,6 +43,8 @@ evals = evals.real[eidx]
 skree = [sum(evals[:n+1]) for n, i in enumerate(evals)]
 sns.scatterplot(range(1, 11), skree[:10])
 plt.show()
+
+print(f"Percent of var: {evals[:3].sum()/evals.sum()*100}")
 
 ########
 

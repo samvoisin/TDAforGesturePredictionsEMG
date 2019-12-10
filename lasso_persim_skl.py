@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pickle
+from time import time
 
 from persim import PersImage
 
@@ -20,14 +21,18 @@ unq_gests = np.unique(gests).size
 
 
 # stratified kfold
-skf = StratifiedKFold(n_splits=5, shuffle=True)
+flds = 3
+skf = StratifiedKFold(n_splits=flds, shuffle=True)
 
-
-
-fit_mat = np.zeros(200*2).reshape(-1, 2) # store C values and avg acc score
+fit_mat = np.zeros(100*2).reshape(-1, 2) # store C values and avg acc score
 
 np.random.seed(1)
-for n, lbda in enumerate(range(1, 1001, 5)):
+for n, lbda in enumerate(range(1, 1000, 10)):
+    ### progress bar ###
+    pb = "~"*int(n/50*100)+" "*int((1-n/50)*100)+"|"
+    print(pb, end="\r")
+    ####################
+    ts = time()
     fv_acc = [] # store acc for each fold
     for trn_idx, tst_idx in skf.split(pims, gests):
         pims_trn, pims_tst = pims[trn_idx, :], pims[tst_idx, :]
@@ -38,7 +43,7 @@ for n, lbda in enumerate(range(1, 1001, 5)):
             C=lbda,
             solver="saga",
             fit_intercept=True,
-            max_iter=5000,
+            max_iter=7000,
             multi_class="multinomial",
             random_state=1)
 
@@ -46,12 +51,16 @@ for n, lbda in enumerate(range(1, 1001, 5)):
 
         # append score for fold
         fv_acc.append(lasso_reg.score(pims_tst, gests_tst))
+        te = time()
 
-    acc = sum(fv_acc) / 5 # avg acc
+    acc = sum(fv_acc) / flds # avg acc
+    print(f"iteration {n}; accuracy {acc}; took {(te-ts)/60} minutes")
 
     fit_mat[n, :] = np.array([lbda, acc])
 
 plt.scatter(fit_mat[:, 0], fit_mat[:, 1])
+plt.xlabel("lambda")
+plt.ylabel("accuracy")
 plt.savefig("./fitlasso.png")
 
 ## save model
