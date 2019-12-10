@@ -40,8 +40,11 @@ log_reg = LogisticRegression(
 
 log_reg.fit(pims_train, gests_train)
 
+
+is_acc = log_reg.score(pims_train, gests_train)
+print(f"In-sample accuracy: {is_acc * 100:.2f}%")
 oos_acc = log_reg.score(pims_test, gests_test)
-print(f"Accuracy: {oos_acc * 100}%")
+print(f"Out-of-sample accuracy: {oos_acc * 100:.2f}%")
 
 ## save model
 with open("./saved_models/log_reg_skl.sav", "wb") as fh:

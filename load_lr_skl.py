@@ -8,6 +8,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
+pim_df = pd.read_csv("./pim_vectors_mp20_sbst.csv")
+pim_df.gest = pim_df.gest.astype("category")
+
+pims = pim_df.values[:, :-2] # predictor vectors: persistence images (864xpx**2)
+gests = pim_df.values[:, -2].astype("int64") # data labels: gesture numbers
 
 pimsd = 1e-5
 px = 20
