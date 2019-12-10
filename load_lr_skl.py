@@ -15,12 +15,25 @@ pim = PersImage(pixels=[px,px], spread=pimsd)
 
 
 # code to load model
-with open("log_reg_skl.sav", "rb") as fh:
+with open("./saved_models/log_reg_skl.sav", "rb") as fh:
    log_reg = pickle.load(fh)
 
 
+######## train/ test split ########
+np.random.seed(1)
+pims_train, pims_test, gests_train, gests_test = train_test_split(
+    pims,
+    gests,
+    test_size=0.2,
+    random_state=1)
+
+
+oos_acc = log_reg.score(pims_test, gests_test)
+print(f"Accuracy: {oos_acc * 100}%")
+
+
 inverse_image = np.copy(log_reg.coef_).reshape(-1, px)
-for i in range(6):
+for i in range(4):
     pim.show(inverse_image[i*px:(i+1)*px, :])
     plt.title("Inverse Persistence Image for Gesture: " + str(i+1))
-    plt.show()
+    plt.savefig("./figures/pres_figs/logreg_inv_img_g"+str(i+1)+".png")
