@@ -58,7 +58,7 @@ This project seeks determine whether it is possible to identify latent features 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{pipeline}
+\includegraphics[width=0.75\textwidth]{pipeline}
 \caption{Proposed data pipeline}
 \end{figure}
 
@@ -76,6 +76,8 @@ The primary work that inspired this project is  \emph{Latent Factors Limiting th
 More recently, Phinyomark \emph{et al.} found applications of TDA for EMG data similar to those generated in \cite{lobov}. They sampled overlapping windows of EMG signals and then reduced the dimension of these windows via principal component analysis. The \emph{mapper} algorithm was applied to the resulting vectors to create a topological network representing the feature space of EMG signals. Signal amplitude and power, nonlinear complexity and frequency information, and time-series structure were determined to be the most influential features for identifying gesture patterns \cite{topograph}.
 
 The preferred classifier to be utilized in the pipeline in figure 1 utilizes self-similarity matrices ("SSMs") and is based on the similarity network fusion ("SNF") method described in \cite{snf}. As a brief summary, SSMs are symmetric matrices whose entries represent a measure of similarity between two points in a time-ordered point cloud ("TOPC"). This measure of similarity may be a distance metric such as the $L_2$ distance or a similarity measure like the gaussian kernel. A set of SSMs generated from differing signal sources can be normalized and thought of as a transition matrix which can be utilized to randomly walk over a connected graph representing the TOPC. If sufficient iterations are performed, a stationary distribution will be reached and the resulting matrix will also be a similarity matrix which captures information from all of the individual matrices. This approach to clustering seems appropriate to the problem at hand because it was developed to handle sensor data generated from differing sources much like the 8 sensors in my data set (section 3). Additionally, this technique does not need the large, homogeneous training data sets required to adequately fit ANNs or other models with large parameter sets. In the paper, the authors use the SNF method on 2 and 3 modalities. My project attempts the method with 5. As we will see, this is a resource intensive endeavor.
+
+\newpage
 
 \item \textbf{Data}
 
@@ -97,11 +99,11 @@ A notable data issue discovered during exploratory analysis is a large disparity
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{s20g3}
+\includegraphics[width=0.75\textwidth]{s20g3}
 \caption{Subject 20 gesture 3. Duration ($ms$) is on the horizontal axis.}
 \end{figure}
 
-\item \textbf{Analysis Methods \& Pipeline}
+\item \textbf{Analysis Methods}
 
 \begin{enumerate}
 \item[1)] \textit{Constructing the Filtering Mechanism}
@@ -110,15 +112,17 @@ The first step in constructing a filtering mechanism was determining features th
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{persim_smpl}
+\includegraphics[width=0.75\textwidth]{persim_smpl}
 \caption{Two samples of persistences images for each gesture}
 \end{figure}
+
+\newpage
 
 As a first step in determining which features are important and which can be removed from the data, the persistence image vectors were normalized, added within their gesture classes, and the resulting vectors were normalized again. This provides a sort of empirical distribtion within ech gesture class. The resulting images are depicted in figure 5.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{comb_pims}
+\includegraphics[width=0.75\textwidth]{comb_pims}
 \caption{Normalized combinations of persistence images for each gesture}
 \end{figure}
 
@@ -128,43 +132,48 @@ The approach just described is interesting, but determining important features r
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{inv_persims}
+\includegraphics[width=0.75\textwidth]{inv_persims}
 \caption{Inverse persistence images of non-sparse (top row) \& sparse (bottom row) regression coefficients}
 \end{figure}
 
 From figure 6 we can see that the sparsity induced by the $L_1$ penalty is mostly induced in the middle and high persistence $1$-cycles. This discovery represents a problem for the construction of a persistence filter because it shows that the information provided by the low persistence $1$ cycles is important to retain. Because of the elder rule, we cannot remove more persistent cycles without also removing those cycles with also removing less persistent cycles.
 
-It is possible that by inlcuding the full gesture cycle, as opposed to just the beginning or just the end of the cycle, we have included information about \emph{two} gestures - the motion to make the gesture and the motion caused by releasing the gesture and returning to a neutral state. This may have a sort of "mirror image" effect making gestures more challenging to recognize. Further research will be done to test this hypothesis as well as to determine commonalities among gestures which are misclassified by the regression models.
-
----
+It is possible that by inlcuding the full gesture cycle, as opposed to just the beginning or just the end of the cycle, information about \emph{two} gestures has been included - the motion to make the gesture and the motion caused by releasing the gesture and returning to a neutral state. This may have a sort of "mirror image" effect making gestures more challenging to recognize. Further research will be done to test this hypothesis as well as to determine commonalities among gestures which are misclassified by the regression models.
 
 \item[2)] \textit{Constructing the Classifier}
-\end{enumerate}
 
-Methods from topological data analysis will be utilized for feature extraction. Persistence diagrams allow us to inform decisions about high-dimensional geometric properties of data without the information loss associated with other techniques for visualizing features (e.g. principle component analysis). Persistence images use a weighting function to emphasize pertinent topological features of a signal and de-emphasize noise. This approach should outperform the typical moving average approach \cite{state} to pre-processing sEMG signals which "bake-in" signal noise and in some cases smooth over potentially important characteristics like medium-sized amplitudes.
+As discussed in section 2, the preferred classifier for the pipeline is a self-similarity template for each of the relevant gestures. A Self-Similarity class was created in python for this purpose. This class is capable of taking in a time ordered point cloud with an arbitrary number of modalities as an array are returning a series of SSMs combined into a single $t \times t \times m$ tensor. Each SSM is constructed using a prespecified similarity measure. A number of SSMs were created with varying similarity measures. Figure 7 depicts SSMs for subject 10 performing gesture 2 twice and subject 20 performing gesture 2 once. Channels 2, 4, and 5 are presented here.
 
-Important topological characteristics identified in this way will be used to encode a filter capable of differentiating useful signal from statistical noise. This represents the first stage in the pipeline. The filter will work by discarding the irrelevant components of the sEMG modalities as identified in the previous paragraph and keeping those components that provide useful information. For example, this might mean removing all periods whose absolute amplitude is less than some threshold which corresponds to imprecision in the sEMG sensor bracelet.
-
-The next stage of the pipeline will feature a classifier capable of differentiating gestures based on their vectorized persistence diagrams or images. A supervised method will first be utilized here to test the separability of the gesture classes. Following tests of supervised learners and separability of the vectors, unsupervised methods of clustering will be employed. The intention of using unsupervised methods is to further provide evidence that large training samples and complex machine learning algorithms are not strictly necessary for gesture recognition. Currently, the preferred classifier for this stage in my pipeline is the SSM described in section 2 paragraph 3.
-
-
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{all_ssm}
+\caption{SSMs generated by gestures from subjects 10 \& 20.}
+\end{figure}
 
 \newpage
 
-\item \textbf{Software}
+Clear similarities can be seen when comparing the two iterations of the gesture performed by subject 10. However, there is considerable between-subject variability with regards to the SSMs. This variability is present between many other subjects beyond the two examples presented here. Notable, there are some subjects whose SSMs exhibit similar characteristics for the same gesture. There is still reason to believe that a latent structure exists between subjects.
 
-My exploratory work with the data set thus far has utilized Python's standard packages for data analysis including matplotlib and NumPy. Additionally, I have been working with libraries that comprise the Scikit-TDA such as ripser, persim, and cechmate. I have already created a series of specialized functions for performing the analysis and building the pipeline described in the previous section. Looking forward the functions in Scikit-TDA should be sufficient for my needs throughout this project.
+As stated in section 4 (Data), there are many instances of subjects performing their gestures for imprecise periods of time. This requires the use of a method known as \emph{dynamic time-warping} \cite{dtw}. Dynamic time-warping is an algorithm capable of finding optimal matches in the peaks and troughs between two time-series data sets. This technique has been applied to similar problems in the past and should be a solution to the problems described here. Unfortunately, due to computing resource constraints and the size of the data set at hand, performing dynamic-time warping was not feasible. The algorithm for dynamic time-warping has complexity $\mathcal{O}(n^2)$. As stated previously, $n$ ranges between 1,500 and 3,000 for a single modality. This prevented conclusive work on constructing self-similarity templates. Plans for mitigating these issues are described in the following section.
 
-The supervised and unsupervised classifiers in the second stage of my pipeline will be implemented via the scikit-learn library. Additional libraries will be employed as needed for these purposes. The SSM approach \cite{ssm1}\cite{snf} to unsupervised clustering will likely require that I develop several functions to meet my specific needs. This should be feasible using NumPy and SciPy, but may require some optimization for run-time efficiency. This can likely be performed using a number of Python-based C/ C++ optimization tools. Time permitting, this may also provide an opportunity to develop and employ functions in Julia to take advantage of the high-performance numerical analysis features found there.
-
-\item \textbf{Risk Mitigation}
-
-Current exploratory analysis is promising. However, there are three primary areas which could slow progress:
-\begin{enumerate}
-\item[1.] \emph{High computational complexity} - As exploratory analysis continue there may come a point where computing various complexes and persistence diagrams becomes computationally infeasible. This scenario is low risk as a significant amount of computation has already been performed without issue. The libraries described in the previous section are well optimized and the data set is not overly complex. Nevertheless, should computation become an issue the code and data can quickly be transferred to Duke's distributed servers and docker containers. Thus development will continue while other components are tested and tasks are performed.
-\item[2.] \emph{Poor classifier performance} - This is also low risk. There are many alternative methods for classifying gestures. The real risk in this area is the risk of over-fitting a particular classifier to the data set resulting in poor out-of-sample performance. The goal of the project is to find a classifier that is invariant to the user who is making the gesture. Over-fitting the data would result in a failure to achieve this goal. To prevent over-fitting, I will employ a modified form of k-fold cross validation that will remove all gestures performed by k subjects from the data set. In the case of a supervised algorithm, I will fit the model to the training data and test on the hold out data. This cross validation method can be used to test the quality of unsupervised methods as well. For the unsupervised algorithms, I will generate clusters from the training data and then see how well the hold-out data fits into these clusters via a cluster purity metric or the like.
-\item[3.] \emph{Inability to identify important features} - This is the greatest risk to the project goals. Inability to detect latent features in the modalities could be due to a number of factors including data quality, sensor imprecision, etc. If this scenario arises, various transformations will be employed on the data set in an attempt to uncover these features. Should that fail to mitigate the problem, I will explore alternative sEMG data sets.
 \end{enumerate}
+
+
+\item \textbf{Next Steps}
+
+Several modifications must be made to the analysis steps described above in order to obtain conclusive results and continue the construction of the classification pipleline:
+
+First, computing resources capable of performing the memory and time intesnive tehcniques required for dynamic time-warping and similarity network fusion. This represents the primary bottleneck to classification. Fortunately, Duke University makes several resources available for these types of projects through their compute cluster service. The computational burden can be futher reduced by more sparsely sampling the modalities. The data points are currently very densely sampled and redundant. Many of these points can likely be removed without issue.
+
+Second, on the topic of constucting a persistence filter, it may be more appropriate to use sliding window 1-D persistence ("SW1Pers") to analyze important features in the sEMG signals data. Some work using SW1Pers has already been performed; however, additional efforts to tune the sliding window parameters are needed.
+
+Finally, it may be wise to seperate each gesture into "begin", "hold", and "release" phases. This can be used to determine whether there is indeed a "mirror image" effect (see sect. 5) causing persistence images to be difficult to classify. Determining when each phase begins and ends will be challenging as there are no labels for this.
+
+
+\item \textbf{Conclusion}
+
+The experiments described above for generating the gesture recognition pipeline have provided null results. However, they have also provided insight into the nature of the variance within and between the subjects in our data set with regards to gesture performance. Further, additoonal research questions have been raised which may lead to development of the desired gesture classifier. There exist many additional methods, including those found in topological data analysis, that can answer these questions.
+
 
 \end{enumerate}
 
@@ -172,6 +181,7 @@ Current exploratory analysis is promising. However, there are three primary area
 \noindent\rule{16cm}{0.4pt}
 \end{center}
 
+\newpage
 
 \begin{thebibliography}{5}
 

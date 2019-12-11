@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.5.23)  11 DEC 2019 12:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.5.23)  11 DEC 2019 14:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -489,7 +489,7 @@ ABD: EveryShipout initializing macros [1
 File: pipeline.jpg Graphic file (type jpg)
 <use pipeline.jpg>
 Package pdftex.def Info: pipeline.jpg  used on input line 61.
-(pdftex.def)             Requested size: 227.6506pt x 57.58463pt.
+(pdftex.def)             Requested size: 341.4759pt x 86.37825pt.
  [2 <./pipeline.jpg>]
 LaTeX Font Info:    Try loading font information for U+msa on input line 78.
 
@@ -504,39 +504,45 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 <gests.png, id=22, 629.35126pt x 458.71375pt>
 File: gests.png Graphic file (type png)
 <use gests.png>
-Package pdftex.def Info: gests.png  used on input line 88.
+Package pdftex.def Info: gests.png  used on input line 90.
 (pdftex.def)             Requested size: 227.6506pt x 165.92775pt.
-<s20g3.png, id=23, 633.0852pt x 549.252pt>
+ [4 <./gests.png>]
+<s20g3.png, id=27, 633.0852pt x 549.252pt>
 File: s20g3.png Graphic file (type png)
 <use s20g3.png>
-Package pdftex.def Info: s20g3.png  used on input line 100.
-(pdftex.def)             Requested size: 227.6506pt x 197.50427pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[4 <./gests.png>]
+Package pdftex.def Info: s20g3.png  used on input line 102.
+(pdftex.def)             Requested size: 341.4759pt x 296.2648pt.
 <persim_smpl.png, id=29, 1819.79875pt x 826.08624pt>
 File: persim_smpl.png Graphic file (type png)
 <use persim_smpl.png>
-Package pdftex.def Info: persim_smpl.png  used on input line 113.
-(pdftex.def)             Requested size: 227.6506pt x 103.33615pt.
-<comb_pims.png, id=30, 1752.5475pt x 424.58624pt>
-File: comb_pims.png Graphic file (type png)
-<use comb_pims.png>
-Package pdftex.def Info: comb_pims.png  used on input line 121.
-(pdftex.def)             Requested size: 227.6506pt x 55.15279pt.
+Package pdftex.def Info: persim_smpl.png  used on input line 115.
+(pdftex.def)             Requested size: 341.4759pt x 155.00423pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[5 <./s20g3.png> <./persim_smpl.png>]
+[5 <./s20g3.png>]
+<comb_pims.png, id=35, 1752.5475pt x 424.58624pt>
+File: comb_pims.png Graphic file (type png)
+<use comb_pims.png>
+Package pdftex.def Info: comb_pims.png  used on input line 125.
+(pdftex.def)             Requested size: 341.4759pt x 82.72595pt.
 <inv_persims.png, id=36, 1729.46124pt x 797.98125pt>
 File: inv_persims.png Graphic file (type png)
 <use inv_persims.png>
-Package pdftex.def Info: inv_persims.png  used on input line 131.
-(pdftex.def)             Requested size: 227.6506pt x 105.03188pt.
- [6 <./comb_pims.png> <./inv_persims.png>] [7] [8]
+Package pdftex.def Info: inv_persims.png  used on input line 135.
+(pdftex.def)             Requested size: 341.4759pt x 157.56pt.
+ [6 <./persim_smpl.png> <./comb_pims.png>]
+<all_ssm.png, id=40, 1002.74625pt x 961.5925pt>
+File: all_ssm.png Graphic file (type png)
+<use all_ssm.png>
+Package pdftex.def Info: all_ssm.png  used on input line 149.
+(pdftex.def)             Requested size: 341.4759pt x 327.46533pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[7 <./inv_persims.png>] [8 <./all_ssm.png>] [9]
 Missing character: There is no ‚ in font cmr10!
 Missing character: There is no Ä in font cmr10!
 Missing character: There is no ú in font cmr10!
@@ -577,34 +583,34 @@ Missing character: There is no ú in font cmr10!
 Missing character: There is no ‚ in font cmr10!
 Missing character: There is no Ä in font cmr10!
 Missing character: There is no ù in font cmr10!
- [9]
 Missing character: There is no ‚ in font cmr10!
 Missing character: There is no Ä in font cmr10!
 Missing character: There is no ú in font cmr10!
 Missing character: There is no ‚ in font cmr10!
 Missing character: There is no Ä in font cmr10!
 Missing character: There is no ù in font cmr10!
- [10] (./713_Final_Paper_Voisin.aux) ) 
+ [10]
+(./713_Final_Paper_Voisin.aux) ) 
 Here is how much of TeX's memory you used:
- 12250 strings out of 492982
- 241885 string characters out of 6134896
+ 12255 strings out of 492982
+ 241959 string characters out of 6134896
  275926 words of memory out of 5000000
- 15572 multiletter control sequences out of 15000+600000
+ 15576 multiletter control sequences out of 15000+600000
  9547 words of font info for 36 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  55i,6n,54p,1502b,379s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type
-1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/sh
-are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on 713_Final_Paper_Voisin.pdf (10 pages, 628727 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
+Output written on 713_Final_Paper_Voisin.pdf (10 pages, 1818477 bytes).
 PDF statistics:
- 80 PDF objects out of 1000 (max. 8388607)
+ 81 PDF objects out of 1000 (max. 8388607)
  52 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 43 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 48 words of extra memory for PDF output out of 10000 (max. 10000000)
 
