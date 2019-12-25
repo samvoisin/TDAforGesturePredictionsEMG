@@ -33,14 +33,14 @@ def trim_array(a, axis=0):
 
     INPUTS
     a - input array of type np.array; must be 2 dimensional
-    axis - is axis on which to double
+    axis - is axis on which to trim
     """
     r, c = a.shape
+    if all(a[-1, :] != np.zeros(c)): return a # if trim not needed return array
+
     for n, i in enumerate(a):
         if all(i == np.zeros(c)):
             return a[:n, :]
-        else:
-            return a
 
 
 def subsample(a):
