@@ -11,7 +11,7 @@ from data_cube import DataCube
 def grow_array(a, axis=0):
     """
     Increase size of array by doubling on specified axis
-    doubling this way gives O(log n) amortized time
+    doubling this way gives constant time writes on avg
 
     INPUTS
     a - input array of type np.array; must be 2 dimensional
