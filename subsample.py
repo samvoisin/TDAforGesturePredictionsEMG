@@ -66,7 +66,7 @@ if __name__ == "__main__":
     dc = DataCube(
         subjects="all",
         gestures="all",
-        channels="all",
+        channels=["2", "4", "5", "6", "8"],
         data_grp="parsed"
         )
     dc.load_data()
