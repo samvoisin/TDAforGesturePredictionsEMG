@@ -65,8 +65,8 @@ def subsample(a):
 if __name__ == "__main__":
     dc = DataCube(
         subjects="all",
-        gestures=["1", "2", "3", "4"],
-        channels=["2", "4", "5", "6", "8"],
+        gestures="all",
+        channels="all",
         data_grp="parsed"
         )
     dc.load_data()

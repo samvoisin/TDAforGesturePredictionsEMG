@@ -51,7 +51,7 @@ class DataCube:
         if subject number is specified [list type] load only that subject(s)
         if gesture is specified [list type] load only that (those) gesture(s)
         """
-        if self.data_grp == "parsed":
+        if self.data_grp == "parsed" or self.data_grp == "subsample":
             # generate data dict {subject : {gesture : array}}
             for s in self.subjects:
                 self.data_set[s] = {}
@@ -65,7 +65,9 @@ class DataCube:
                                 delimiter=",",
                                 skiprows=1)
                             # remove unspecified channels
-                            rm_ch = [i for i in range(1,9) if i not in self.channels]
+                            rm_ch = [
+                                i for i in range(1,9) if i not in self.channels
+                                ]
                             rm_ch.reverse() # rev removal channels for del order
                             for c in rm_ch:
                                 # delete c^th column of array
