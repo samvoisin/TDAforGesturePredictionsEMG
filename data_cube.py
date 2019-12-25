@@ -122,7 +122,7 @@ class DataCube:
 
     def plot_gests(self, subj, g, chans="all", save=False, path=None):
         """
-        Example input: plot_gests("30", "3_1_2", thrty, signals=[1, 2, 3, 5, 8])
+        Example input: plot_gests("30", "3_1_2", thrty, chans=[1, 2, 3, 5, 8])
         create plots of data for a given subject (subj) - type == str
         and gesture (g) - array in subject dict (e.g. (3_0, 3_1, 6_1. etc.))
         subj_dict - dict containing data from one more more subj (key == subj #)

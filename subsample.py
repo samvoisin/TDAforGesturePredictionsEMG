@@ -39,6 +39,8 @@ def trim_array(a, axis=0):
     for n, i in enumerate(a):
         if all(i == np.zeros(c)):
             return a[:n, :]
+        else:
+            return a
 
 
 def subsample(a):
