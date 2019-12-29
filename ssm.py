@@ -2,14 +2,10 @@ import numpy as np
 from numpy import linalg as la
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
-
-
-
-
+from sklearn.preprocessing import scale
 
 
 # Create SSMs
-
 class SSM:
 
     def __init__(self, time_series, metric):
@@ -27,6 +23,13 @@ class SSM:
         self.array = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
 
 
+    def normalize_SSM(self):
+        """
+        Normalize and scale modalities in array
+        """
+        self.mods = scale(self.mods, axis=0)
+
+
     def calc_SSM(self):
         """
         calculate SSM
@@ -40,6 +43,20 @@ class SSM:
                             self.mods[j, m]
                             )
             self.array[m, :, :] = self.array[m, :, :] + self.array[m, :, :].T
+
+
+    def plot_SSM(self, m, interp='nearest', cmap='afmhot'):
+        """
+        display self-similarity matrix for modality 'm'
+        """
+        plt.figure(figsize=(12, 8))
+        plt.subplot(121)
+        plt.plot(self.tidx, self.mods[:, m])
+        plt.title("Modality " + str(m))
+        plt.subplot(122)
+        plt.imshow(self.array[m, :, :], interpolation = interp, cmap = cmap)
+        plt.title("SSM for modality " + str(m))
+        plt.show()
 
 
 if __name__ == "__main__":
