@@ -8,6 +8,13 @@ import os
 import matplotlib.pyplot as plt
 
 
+def root_mean_sq(a):
+    """
+    calculate root mean squared of array a
+    """
+    return (sum(a**2)/a.size)**(0.5)
+
+
 class DataCube:
     """
     DataCube class designed for loading and managing data set
@@ -94,6 +101,35 @@ class DataCube:
                                 )
         # set loaded flag to True
         self.loaded_flg = True
+
+
+
+    def rms_smooth(self, N, stp):
+        """
+        Perform root-mean-squares smoothing on the data set
+        This creates data_set_smooth attribute
+        N - number of samples in time window
+        stp - step size
+        """
+        self.data_set_smooth = {} # initialize empty data set attribute
+        for subj, gdict in self.data_set.items():
+            self.data_set_smooth[subj] = {}
+            for g, a in gdict.items(): # for each array in the gesture g
+                nr, nc = a.shape
+                n_slides = (a[:, 1].size - (N - stp)) / stp # num windows
+                ### initialize sliding window variables ###
+                res_sz = int(n_slides) # truncate num of slides for result size
+                res = np.zeros(shape=(res_sz, nc))
+                s = 0 # window start
+                e = N # window end
+                for n, v in enumerate(res):
+                    v[0] = a[e, 0]
+                    v[1:] = np.apply_along_axis(root_mean_sq, 0, a[s:e, 1:])
+                    s += stp
+                    e += stp
+                self.data_set_smooth[subj][g] = res
+
+
 
 
     def get_max_obs(self):
