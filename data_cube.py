@@ -123,7 +123,7 @@ class DataCube:
                 s = 0 # window start
                 e = N # window end
                 for n, v in enumerate(res):
-                    v[0] = a[e, 0]
+                    v[0] = a[int(e-s/2), 0]
                     v[1:] = np.apply_along_axis(root_mean_sq, 0, a[s:e, 1:])
                     s += stp
                     e += stp
@@ -132,7 +132,7 @@ class DataCube:
 
 
 
-    def get_max_obs(self):
+    def get_max_obs(self, smoothed=False):
         """
         find maximum number of observations in loaded data set
         to be used for interpolation
@@ -144,7 +144,7 @@ class DataCube:
                     self.max_obs = a[:, 0].size # update current max
 
 
-    def get_min_obs(self):
+    def get_min_obs(self, smoothed=False):
         """
         find maximum number of observations in loaded data set
         to be used for interpolation
