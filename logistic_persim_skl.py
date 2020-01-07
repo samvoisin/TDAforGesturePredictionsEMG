@@ -65,4 +65,5 @@ inverse_image = np.copy(log_reg.coef_).reshape(-1, px)
 for i in range(4):
     pim.show(inverse_image[i*px:(i+1)*px, :])
     plt.title("Inverse Persistence Image for Gesture: " + str(i+1))
-    plt.savefig("./figures/pres_figs/logreg_inv_img_g"+str(i+1)+".png")
+    #plt.savefig("./figures/pres_figs/logreg_inv_img_g"+str(i+1)+".png")
+    plt.show()

@@ -12,8 +12,6 @@ from ripser import ripser, Rips
 from persim import plot_diagrams, PersImage
 
 from data_cube import DataCube
-#from TDA_helper_fcns import load_data, sublevel_set_time_series_dist
-
 
 
 ########################## parallel helper functions ###########################
@@ -55,17 +53,18 @@ if __name__ == "__main__":
     dc = DataCube(
         subjects= "all",
         gestures=["1", "2", "3", "4"],
-        channels=["2", "4", "5", "6", "8"],
-        data_grp="parsed"
+        #channels=["2", "4", "5", "6", "8"],
+        data_grp="subsample"
         )
     dc.load_data()
+    dc.rms_smooth(20, 5)
 
     ns = len(dc.subjects)
     ng = len(dc.gestures) # number of gestures
 
     nobs_sbj = ng*4
     nvects = ns * nobs_sbj # each subj performs each gesture 4x
-    pim_px = 20 # persistence image dims (square)
+    pim_px = 40 # persistence image dims (square)
     pim_sd = 1e-5 # persistence image st. dev.
 
     # vects have equal # persim pix + 2 cols for subj & gest labels
@@ -76,7 +75,7 @@ if __name__ == "__main__":
 
     par_res = [
     pool.apply_async(subj_to_pims, args=(sbj, sdict, pim_px, pim_sd, nobs_sbj)
-    ) for sbj, sdict in dc.data_set.items()
+    ) for sbj, sdict in dc.data_set_smooth.items()
     ]
 
     pool.close()
@@ -93,4 +92,4 @@ if __name__ == "__main__":
     cnames = ["px"+str(i) for i in pim_df.columns]
     cnames[-2:] = ["gest", "subj"]
     pim_df.columns = cnames
-    pim_df.to_csv("./pim_vectors_mp20_sbst.csv", index=False)
+    pim_df.to_csv("./Data/pim_vectors_mp40_smth.csv", index=False)
