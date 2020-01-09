@@ -86,39 +86,37 @@ def build_new_ref(to_dir, sn, orig_file, g, ct):
         orig_file - file name with raw data; 2 per subject
     """
     if orig_file.startswith("1"):
-        new_ref = to_dir + sn + "/" + str(g) + "_" + str(ct) + "_1.csv"
+        new_ref = to_dir+sn+"/"+str(int(g))+"_"+str(ct)+"_1.csv"
     else:
-        new_ref = to_dir + sn + "/" + str(g) + "_" + str(ct) + "_2.csv"
+        new_ref = to_dir+sn+"/"+str(int(g))+"_"+str(ct)+"_2.csv"
     return new_ref
 
 
 ### script body ###
 
-# path to current/ raw data
-raw_dir = "./Data/EMG_data_for_gestures-master/"
-subj_nums = os.listdir(raw_dir)
-subj_data = {n : os.listdir(raw_dir + n) for n in subj_nums}
-
-# define new file path and create new directory structure
-to_dir = "./Data/EMG_data_for_gestures-parsed/"
-for n in subj_nums:
-    os.makedirs(to_dir + n, exist_ok = True) # create new dir
-
-# generate new data files
-for n, v in subj_data.items():
-    print(f"Subject number {n}")
-    # origin file 1 or 2 for each subject
-    for o_f in (0, 1):
-        cln_gests = gest_dict(raw_dir + n + "/" + v[o_f])
-        # parse data file seperating frames and saving them to new dir
-        for g, d in cln_gests.items():
-            ct = 0 # counter for new file names
-            # save data frames found in dictionary d
-            for df in d.values():
-                clean_ref = build_new_ref(to_dir, n, v[o_f], g, ct)
-                df.to_csv(clean_ref, index = False, sep = ",")
-                ct += 1
-
-
 if __name__ == "__main__":
-    build_new_ref()
+    
+    # path to current/ raw data
+    raw_dir = "./Data/EMG_data_for_gestures-master/"
+    subj_nums = os.listdir(raw_dir)
+    subj_data = {n : os.listdir(raw_dir + n) for n in subj_nums}
+
+    # define new file path and create new directory structure
+    to_dir = "./Data/EMG_data_for_gestures-parsed/"
+    for n in subj_nums:
+        os.makedirs(to_dir + n, exist_ok = True) # create new dir
+
+    # generate new data files
+    for n, v in subj_data.items():
+        print(f"Subject number {n}")
+        # origin file 1 or 2 for each subject
+        for o_f in (0, 1):
+            cln_gests = gest_dict(raw_dir+n+"/"+v[o_f])
+            # parse data file seperating frames and saving them to new dir
+            for g, d in cln_gests.items():
+                ct = 0 # counter for new file names
+                # save data frames found in dictionary d
+                for df in d.values():
+                    clean_ref = build_new_ref(to_dir, n, v[o_f], g, ct)
+                    df.to_csv(clean_ref, index=False, sep=",")
+                    ct += 1

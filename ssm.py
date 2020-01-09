@@ -45,7 +45,13 @@ class SSM:
             self.array[m, :, :] = self.array[m, :, :] + self.array[m, :, :].T
 
 
-    def plot_SSM(self, m, interp='nearest', cmap='afmhot'):
+    def plot_SSM(
+        self,
+        m,
+        interp='nearest',
+        cmap='afmhot',
+        save=False,
+        path=None):
         """
         display self-similarity matrix for modality 'm'
         """
@@ -54,9 +60,16 @@ class SSM:
         plt.plot(self.tidx, self.mods[:, m])
         plt.title("Modality " + str(m))
         plt.subplot(122)
-        plt.imshow(self.array[m, :, :], interpolation = interp, cmap = cmap)
+        plt.imshow(
+            self.array[m, :, :],
+            interpolation=interp,
+            cmap=cmap)
         plt.title("SSM for modality " + str(m))
-        plt.show()
+        if save:
+            if path == None: raise ValueError("Must provide save path!")
+            plt.savefig(path)
+        else:
+            plt.show()
 
 
 if __name__ == "__main__":
