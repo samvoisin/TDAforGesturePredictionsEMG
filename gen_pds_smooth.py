@@ -1,14 +1,18 @@
-###############################################################################
-######## Generate persistence diagrams for all subjects & all gestures ########
-###############################################################################
+####### Generate all persistence diagrams for smoothed gesture modalities
+####### One for each channel, within each gesture, within each subject
 
-import os
+### import libraries
+
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 from ripser import ripser
 from persim import plot_diagrams
-from TDA_helper_fcns import load_data, sublevel_set_time_series_dist
+
+from TDA_helper_fcns import sublevel_set_time_series_dist
+from data_cube import DataCube
+from ssm import SSM
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -35,22 +39,22 @@ def plot_ts_pd(ts, pd, figsize=(12, 6), save_img=False, path=None):
     deaths = deaths[deaths < np.inf] # do not mark final cycle
 
     plt.figure(figsize=figsize)
-    # Plot the time series
+    # plot the time series
     plt.subplot(121)
     plt.plot(ts[:, 0], ts[:, 1])
     ax = plt.gca()
-    #ax.set_yticks(allgrid)
-    #ax.set_xticks([])
+    ax.set_yticks(allgrid)
+    ax.set_xticks([])
     plt.grid(linewidth=1, linestyle='--')
     plt.xlabel("time (ms)")
     plt.ylabel("Amplitude")
 
-    # Plot the persistence diagram
+    # plot the persistence diagram
     plt.subplot(122)
     ax = plt.gca()
-    #ax.set_xticks(births)
-    #ax.set_yticks(deaths)
-    #ax.tick_params(labelrotation=45)
+    ax.set_xticks(births)
+    ax.set_yticks(deaths)
+    ax.tick_params(labelrotation=45)
     plt.grid(linewidth=1, linestyle='--')
     plot_diagrams(pd["dgms"][0], size=50)
     plt.title("Persistence Diagram")
@@ -64,35 +68,59 @@ def plot_ts_pd(ts, pd, figsize=(12, 6), save_img=False, path=None):
         plt.savefig(os.curdir + "/ts_pd.png")
         plt.close()
 
-
-
 ### program body ###
 
 if __name__ == "__main__":
-    # load all data into a single dictionary
-    print("Loading data...")
-    all_subjs = load_data()
-    print("Data loaded...\n")
 
-    # iterate through all subjects
-    for sbj, sdict in all_subjs.items():
-        print(f"Subject number: {sbj}")
-        # Dictionary of each subject with all gestures
-        for gnum, garray in sdict.items():
-            print(f"    Gesture number: {gnum}")
-            os.makedirs("./figures/"+sbj+"/"+gnum)
-            # loop through each signal in the gesture
-            tidx = garray[:, 0] # time data
-            for s in range(1, garray.shape[1]-1):
+    ### generate directory structure ###
+    subjs = [
+        "01", "02", "03", "04", "05", "06",
+        "07", "08", "09", "10", "11", "12",
+        "13", "14", "15", "16", "17", "18",
+        "19", "20", "21", "22", "23", "24",
+        "25", "26", "27", "28", "29", "30",
+        "31", "32", "33", "34", "35", "36"
+        ]
+    gests = [
+        "1_0_1", "1_1_1", "1_0_2", "1_1_2",
+        "2_0_1", "2_1_1", "2_0_2", "2_1_2",
+        "3_0_1", "3_1_1", "3_0_2", "3_1_2",
+        "4_0_1", "4_1_1", "4_0_2", "4_1_2",
+        "5_0_1", "5_1_1", "5_0_2", "5_1_2",
+        "6_0_1", "6_1_1", "6_0_2", "6_1_2"
+        ]
+    to_dir = "./figures/pd_smoothed/"
+    for s in subjs:
+        for g in gests:
+            os.makedirs(to_dir+s+"/"+g, exist_ok=True)
+
+    ### load data ###
+    dc = DataCube(
+        subjects="all",
+        gestures=["1", "2", "3", "4", "5", "6"],
+        data_grp="parsed"
+    )
+    dc.load_data()
+
+    ### smooth modalities ###
+    dc.rms_smooth(300, 90)
+
+    for s, gdict in dc.data_set_smooth.items():
+        print(f"Subject number {s}")
+        for g, a in gdict.items():
+            print(f"    Gesture ID {g}")
+            r, c = a.shape
+            tidx = a[:, 0]
+            for m in range(1, c-1):
                 # file path for saving image
-                fp = "./figures/"+sbj+"/"+gnum+"/"+"sig_"+str(s)
-                sls = sublevel_set_time_series_dist(garray[:,s])
+                fig_pth = to_dir+"/"+s+"/"+g+"/"+"channel_"+str(m+1)+".png"
+                sls = sublevel_set_time_series_dist(a[:,m])
                 # calculate persistent homology
                 pers_diag = ripser(sls, distance_matrix=True)
-                # save persistence diagram
+                # plot and save persistence diagram
                 plot_ts_pd(
-                    np.c_[tidx, garray[:,s]],
+                    np.c_[tidx, a[:,m]],
                     pers_diag,
                     save_img=True,
-                    path=fp
+                    path=fig_pth
                     )
