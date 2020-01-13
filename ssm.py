@@ -5,6 +5,16 @@ from scipy.interpolate import griddata
 from sklearn.preprocessing import scale
 
 
+def sim_kern(i, j, m, s=1):
+    """
+    similarity kernel function
+    i, j are data points between which similarity is measured
+    m is a metric
+    s is a variance parameter
+    """
+    return np.exp(-(m(i,j)**2)/s)
+
+
 # Create SSMs
 class SSM:
 
@@ -23,6 +33,14 @@ class SSM:
         self.array = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
 
 
+    def reset_array(self):
+        """
+        reset array containing SSM or similarity matrix (i.e. self.array)
+        to a tensor of zeros
+        """
+        self.array = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
+
+
     def normalize_SSM(self):
         """
         Normalize and scale modalities in array
@@ -32,8 +50,10 @@ class SSM:
 
     def calc_SSM(self):
         """
-        calculate SSM
+        calculate self-similarity matrix (SSM)
+        SSM is a distance matrix under self.metric
         """
+        self.reset_array()
         for m in range(self.n_mods): # loop over modalities
             for i in range(self.n_obs): # loop over observations in m
                 for j in range(self.n_obs):
@@ -41,6 +61,25 @@ class SSM:
                         self.array[m, i, j] = self.metric(
                             self.mods[i, m],
                             self.mods[j, m]
+                            )
+            self.array[m, :, :] = self.array[m, :, :] + self.array[m, :, :].T
+
+
+    def to_sim_measure(self, s=1, kern=sim_kern):
+        """
+        convert self-similarity matrix (SSM)
+        SSM is a distance matrix under self.metric
+        """
+        self.reset_array()
+        for m in range(self.n_mods): # loop over modalities
+            for i in range(self.n_obs): # loop over observations in m
+                for j in range(self.n_obs):
+                    if i < j: # fill lower triangle only
+                        self.array[m, i, j] = kern(
+                            self.mods[i, m],
+                            self.mods[j, m],
+                            m=self.metric,
+                            s=s
                             )
             self.array[m, :, :] = self.array[m, :, :] + self.array[m, :, :].T
 
