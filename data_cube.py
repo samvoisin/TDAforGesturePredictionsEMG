@@ -132,16 +132,22 @@ class DataCube:
 
 
 
-    def get_max_obs(self, smoothed=False):
+    def get_max_obs(self, smooth=False):
         """
         find maximum number of observations in loaded data set
         to be used for interpolation
         """
         self.max_obs = 0
-        for s, gdict in self.data_set.items():
-            for g, a in gdict.items():
-                if self.max_obs < a[:, 0].size: # if current max < nrow
-                    self.max_obs = a[:, 0].size # update current max
+        if smooth:
+            for s, gdict in self.data_set_smooth.items():
+                for g, a in gdict.items():
+                    if self.max_obs < a[:, 0].size: # if current max < nrow
+                        self.max_obs = a[:, 0].size # update current max
+        else:
+            for s, gdict in self.data_set.items():
+                for g, a in gdict.items():
+                    if self.max_obs < a[:, 0].size: # if current max < nrow
+                        self.max_obs = a[:, 0].size # update current max
 
 
     def get_min_obs(self, smoothed=False):
