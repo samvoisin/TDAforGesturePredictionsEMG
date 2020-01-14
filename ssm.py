@@ -1,8 +1,14 @@
 import numpy as np
 from numpy import linalg as la
 import matplotlib.pyplot as plt
-from scipy.interpolate import griddata
 from sklearn.preprocessing import scale
+
+
+def euclidian_dist(i, j):
+    """
+    euclidian distance for scalar values
+    """
+    return abs(i-j) # abs equivalent to ((i-j)**2)**0.5 in scalar case
 
 
 def sim_kern(i, j, m, s=1):
@@ -18,12 +24,12 @@ def sim_kern(i, j, m, s=1):
 # Create SSMs
 class SSM:
 
-    def __init__(self, time_series, metric):
+    def __init__(self, time_series, metric=euclidian_dist):
         """
         CURRENTLY SUPPORTS SCALARS
         time_series - (t x 1+m) numpy array; t is time series
             1+m is time index + number of modalities
-        metric - metric to be used in generating SSMS (can be similarity kernel)
+        metric - metric to be used in generating distance matrix SSMs
         """
         self.tidx = time_series[:, 0].astype("int32") # time index
         self.mods = time_series[:, 1:] # modalities
@@ -41,7 +47,7 @@ class SSM:
         self.array = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
 
 
-    def normalize_SSM(self):
+    def normalize_modalities(self):
         """
         Normalize and scale modalities in array
         """
@@ -82,6 +88,7 @@ class SSM:
                             s=s
                             )
             self.array[m, :, :] = self.array[m, :, :] + self.array[m, :, :].T
+            self.array[m, :, :] += np.diag(np.ones(self.n_obs)) # main diagonal
 
 
     def plot_SSM(
@@ -89,12 +96,13 @@ class SSM:
         m,
         interp='nearest',
         cmap='afmhot',
+        figsize=(12,8),
         save=False,
         path=None):
         """
         display self-similarity matrix for modality 'm'
         """
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=figsize)
         plt.subplot(121)
         plt.plot(self.tidx, self.mods[:, m])
         plt.title("Modality " + str(m))
