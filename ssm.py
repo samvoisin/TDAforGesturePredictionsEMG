@@ -39,19 +39,19 @@ class SSM:
         self.array = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
 
 
+    def normalize_modalities(self):
+        """
+        Normalize and scale modalities in array
+        """
+        self.mods = scale(self.mods, axis=0)
+
+
     def reset_array(self):
         """
         reset array containing SSM or similarity matrix (i.e. self.array)
         to a tensor of zeros
         """
         self.array = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
-
-
-    def normalize_modalities(self):
-        """
-        Normalize and scale modalities in array
-        """
-        self.mods = scale(self.mods, axis=0)
 
 
     def calc_SSM(self):
@@ -71,10 +71,12 @@ class SSM:
             self.array[m, :, :] = self.array[m, :, :] + self.array[m, :, :].T
 
 
-    def to_sim_measure(self, s=1, kern=sim_kern):
+    def calc_sim_matrix(self, s=1, kern=sim_kern):
         """
-        convert self-similarity matrix (SSM)
-        SSM is a distance matrix under self.metric
+        calculate self-similarity matrix (SSM) using similarity kernel
+        instead of distance metric
+        s is variace/ decay of similarity kernel
+        kern is similarity kernel; a function
         """
         self.reset_array()
         for m in range(self.n_mods): # loop over modalities

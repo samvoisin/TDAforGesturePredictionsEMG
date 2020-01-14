@@ -18,24 +18,18 @@ class SNF(SSM):
         # inherit methods and properties from parent
         super().__init__(time_series, metric)
 
-    def calc_sim_matrix(self, s=1, kern=sim_kern):
+
+    def calc_transition_matrix(self):
         """
-        convert self-similarity matrix (SSM)
-        SSM is a distance matrix under self.metric
+        calculate a transition probability matrix from the SSM
+        each row in the new array must sum to 1.
         """
-        self.reset_array()
+        trans_mat = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
         for m in range(self.n_mods): # loop over modalities
             for i in range(self.n_obs): # loop over observations in m
                 for j in range(self.n_obs):
-                    if i < j: # fill lower triangle only
-                        self.array[m, i, j] = kern(
-                            self.mods[i, m],
-                            self.mods[j, m],
-                            m=self.metric,
-                            s=s
-                            )
-            self.array[m, :, :] = self.array[m, :, :] + self.array[m, :, :].T
-            self.array[m, :, :] += np.diag(np.ones(self.n_obs)) # main diagonal
+                    if i != j:
+
 
 
 if __name__ == "__main__":
