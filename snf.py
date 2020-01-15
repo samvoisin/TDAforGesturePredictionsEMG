@@ -23,12 +23,20 @@ class SNF(SSM):
         """
         calculate a transition probability matrix from the SSM
         each row in the new array must sum to 1.
+
+        Ref: Multiscale Geometric Summaries Similarity-based Sensor Fusion (p.4)
         """
-        trans_mat = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
+        self.trans_mat = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
         for m in range(self.n_mods): # loop over modalities
-            for i in range(self.n_obs): # loop over observations in m
-                for j in range(self.n_obs):
+            for i in range(self.n_obs): # loop over rows in SSM
+                for j in range(self.n_obs): # loop over columns in SSM
                     if i != j:
+                        self.trans_mat[m,i,j] = (
+                            self.array[m,i,j] /
+                            (2*(self.array[m,i,:].sum()-self.array[m,i,i]))
+                            )
+                    else:
+                        self.trans_mat[m,i,j] = 0.5
 
 
 
