@@ -72,6 +72,10 @@ class SNF(SSM):
                             )
 
 
+    def fuse_templates(self, iters=50):
+        pass
+
+
     def plot_template(
         self,
         m,
