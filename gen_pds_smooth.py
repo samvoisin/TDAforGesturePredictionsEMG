@@ -68,6 +68,7 @@ def plot_ts_pd(ts, pd, figsize=(12, 6), save_img=False, path=None):
         plt.savefig(os.curdir + "/ts_pd.png")
         plt.close()
 
+
 ### program body ###
 
 if __name__ == "__main__":

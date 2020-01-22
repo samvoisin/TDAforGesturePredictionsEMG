@@ -6,6 +6,7 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import scale
 
 
 def root_mean_sq(a):
@@ -130,6 +131,29 @@ class DataCube:
                 self.data_set_smooth[subj][g] = res
 
 
+    def normalize_modalities(self, smooth=False):
+        """
+        Normalize and scale all modalities
+
+        smooth - boolean; used self.data_set_smooth if True
+        """
+        if smooth:
+            set = self.data_set_smooth
+        else:
+            set = self.data_set
+
+        for s, gdict in set.items():
+            for g, array in gdict.items():
+                set[s][g] = np.c_[
+                    array[:, 0],
+                    scale(array[:, 1:-1], axis=0),
+                    array[:, -1]
+                    ]
+
+        if smooth:
+            self.data_set_smooth = set
+        else:
+            self.data_set = set
 
 
     def get_max_obs(self, smooth=False):
