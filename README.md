@@ -17,8 +17,11 @@ To Do List:
 1) Create data set of persistence diagram vectors X done
 2) Add random Gaussian noise and recalculate persistence X done - null result
 3) normalize persistence images for log reg X done
-4) use persim to ID influential image components for filter
-5) SSM fusion
-    a) create SNF functions
-    b) speed up SSM creation with cython, numba, sparse matrix
-6) CDER Classifier for time-series(?)
+4) use persim to ID influential image components for filter X done
+5) SNF X done
+
+6) Complete persistence filter development - in progress
+7) Compare fused similarity templates across gesture classes and within and across subjects
+8) Compare fused similarity template variance (static vs clan images) to variance in modalities
+    - How does variance within and between modalities effect SNF template outcome
+9) Scattering transform 
