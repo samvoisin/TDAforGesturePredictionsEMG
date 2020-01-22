@@ -11,12 +11,12 @@ def euclidian_dist(i, j):
     return abs(i-j) # abs equivalent to ((i-j)**2)**0.5 in scalar case
 
 
-def sim_kern(i, j, m, s=1):
+def gaussian(i, j, metric, s=1):
     """
-    similarity kernel function
-    i, j are data points between which similarity is measured
-    m is a metric
-    s is a variance parameter
+    gaussian similarity kernel function
+    i, j - data points between which similarity is measured
+    metric - a metric
+    s - variance parameter
     """
     return np.exp(-(m(i,j)**2)/s)
 
@@ -27,9 +27,9 @@ class SSM:
     def __init__(self, time_series, metric=euclidian_dist):
         """
         CURRENTLY SUPPORTS SCALARS
-        time_series - (t x 1+m) numpy array; t is time series
+        time_series - a (t x 1+m) numpy array object; t is time series
             1+m is time index + number of modalities
-        metric - metric to be used in generating distance matrix SSMs
+        metric - function to be used in generating distance matrix SSMs
         """
         self.tidx = time_series[:, 0].astype("int32") # time index
         self.mods = time_series[:, 1:] # modalities
@@ -69,28 +69,6 @@ class SSM:
                             self.mods[j, m]
                             )
             self.array[m, :, :] = self.array[m, :, :] + self.array[m, :, :].T
-
-
-    def calc_sim_matrix(self, s=1, kern=sim_kern):
-        """
-        calculate self-similarity matrix (SSM) using similarity kernel
-        instead of distance metric
-        s is variace/ decay of similarity kernel
-        kern is similarity kernel; a function
-        """
-        self.reset_array()
-        for m in range(self.n_mods): # loop over modalities
-            for i in range(self.n_obs): # loop over observations in m
-                for j in range(self.n_obs):
-                    if i < j: # fill lower triangle only
-                        self.array[m, i, j] = kern(
-                            self.mods[i, m],
-                            self.mods[j, m],
-                            m=self.metric,
-                            s=s
-                            )
-            self.array[m, :, :] = self.array[m, :, :] + self.array[m, :, :].T
-            self.array[m, :, :] += np.diag(np.ones(self.n_obs)) # main diagonal
 
 
     def plot_SSM(
