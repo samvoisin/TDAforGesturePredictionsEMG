@@ -188,54 +188,6 @@ class SNF(SSM):
                     )
 
 
-    def calc_transition_matrix(self):
-        """
-        calculate a transition probability matrix from the SSM
-        each row in the new array must sum to 1.
-
-        Ref: Multiscale Geometric Summaries Similarity-based Sensor Fusion (p.4)
-        """
-        self.trans_mtrx = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
-        for m in range(self.n_mods): # loop over modalities
-            for i in range(self.n_obs): # loop over rows in SSM
-                for j in range(self.n_obs): # loop over columns in SSM
-                    #if i != j:
-                    self.trans_mtrx[m,i,j] = (
-                        self.array[m,i,j] /
-                        (2*(self.array[m,i,:].sum()))#-self.array[m,i,i]))
-                        )
-                    #else:
-                    #    self.trans_mtrx[m,i,j] = 0.5
-
-
-    def calc_similarity_graph(self):
-        """
-        calculate a similarity graph (i.e."masked" transition probability
-        matrix) from the SSM. This matrix represents a graph where vertices are
-        data points and edges are the distances between vertices.
-
-        k - float in (0,1]; proportion of nearest neighbors to
-        vertex i (i.e. those js with the k largest similarity values in the
-        ith row of the SSM)
-
-        NOTE: trans_mtrx must exist; run `calc_transition_matrix()` method
-
-        Ref: Multiscale Geometric Summaries Similarity-based Sensor Fusion (p.4)
-        """
-        self.similarity_graph = np.zeros(
-            shape=(self.n_mods, self.n_obs, self.n_obs)
-            )
-        for m in range(self.n_mods): # loop over modalities
-            for i in range(self.n_obs): # loop over rows of SSM
-                knn = np.argsort(-self.array[m,i,:])[:self.kN] # knn index nums
-                for j in range(self.n_obs): # loop over columns in SSM
-                    if self.array[m,i,j] in self.array[m,i,:][knn]:
-                        self.similarity_graph[m,i,j] = (
-                            self.array[m,i,j] /
-                            (2*self.array[m,i,:][knn].sum())
-                            )
-
-
     def network_fusion(self, iters=50):
         """
         perform random walk over similarity graph
@@ -246,20 +198,19 @@ class SNF(SSM):
 
         fused_similarity_template - A 2D numpy array representing the fusion
         of all modalities' similarity templates
+
+        CURRENTLY SET UP FOR 2 MODALITIES
         """
-        self.similarity_templates = self.trans_mtrx.copy()
         for i in range(iters):
             for m in range(self.n_mods):
-                self.similarity_templates[m,:,:] = (
-                    self.similarity_graph[m,:,:] @
-                    (
-                        tensor_sum_except(self.similarity_templates, m) /
-                        (self.n_mods-1)
-                    ) @ self.similarity_graph[m,:,:].T
-                )
+                self.P[m,:,:] = (
+                    self.P_knn[m,:,:] @
+                    ((1/(self.n_mods-1))*tensor_sum_except(self.P[:,:,:], m)) @
+                    self.P_knn[m,:,:].T
+                    )
 
         self.fused_similarity_template = (
-            self.similarity_templates.sum(axis=0) / self.n_mods
+            self.P.sum(axis=0) / self.n_mods
             )
 
 
@@ -285,7 +236,7 @@ class SNF(SSM):
             plt.title("Fused similarity templates")
         else:
             plt.imshow(
-                self.similarity_templates[m, :, :],
+                self.P[m, :, :],
                 interpolation=interp,
                 cmap=cmap)
             plt.title("Fused transition matrix for modality " + str(m))
@@ -300,4 +251,15 @@ class SNF(SSM):
 
 
 if __name__ == "__main__":
-    pass
+
+    from data_cube import DataCube
+
+    dc = DataCube(
+        subjects="all",
+        gestures=["1", "2", "3", "4"],
+        channels=["2", "4", "5", "6", "8"],
+        data_grp="parsed"
+        )
+
+    dc.load_data()
+    dc.rms_smooth(300, 20)
