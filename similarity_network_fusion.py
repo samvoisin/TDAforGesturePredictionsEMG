@@ -109,8 +109,8 @@ class SNF(SSM):
                                     self.mods[i, m],
                                     self.mods[j, m],
                                     metric=self.metric,
-                                    inn=inn[1:self.kN], # exclude self
-                                    jnn=jnn[1:self.kN], # exclude self
+                                    inn=inn[0:self.kN], # include self
+                                    jnn=jnn[0:self.kN], # include self
                                     b=b
                                     )
                         self.W[m, i, j] = self.kern(
@@ -162,8 +162,8 @@ class SNF(SSM):
                                 self.mods[i, m],
                                 self.mods[j, m],
                                 metric=self.metric,
-                                inn=inn[1:self.kN], # exclude self
-                                jnn=jnn[1:self.kN], # exclude self
+                                inn=inn[0:self.kN], # include self
+                                jnn=jnn[0:self.kN], # include self
                                 b=b
                                 )
                     if j in knn:
@@ -188,9 +188,15 @@ class SNF(SSM):
                     )
 
 
-    def network_fusion(self, iters=50):
+    def network_fusion(self, eta=1, iters=50):
         """
         perform random walk over similarity graph
+
+        INPUT:
+        eta - regularization term used to avoid the loss of
+            self-similarity through the diffusion process and to ensure more
+            robust mass is distributed
+        iters - number of iterations to perform
 
         OUTPUT:
         similarity_templates attribute - a 3D numpy array (i.e. tensor) of
@@ -198,8 +204,6 @@ class SNF(SSM):
 
         fused_similarity_template - A 2D numpy array representing the fusion
         of all modalities' similarity templates
-
-        CURRENTLY SET UP FOR 2 MODALITIES
         """
         for i in range(iters):
             for m in range(self.n_mods):
@@ -207,11 +211,11 @@ class SNF(SSM):
                     self.P_knn[m,:,:] @
                     ((1/(self.n_mods-1))*tensor_sum_except(self.P[:,:,:], m)) @
                     self.P_knn[m,:,:].T
-                    )
+                    ) + eta*np.eye(self.n_obs)
 
         self.fused_similarity_template = (
             self.P.sum(axis=0) / self.n_mods
-            )
+            ) - eta*np.eye(self.n_obs) # back out regularization constant
 
 
     def plot_template(
