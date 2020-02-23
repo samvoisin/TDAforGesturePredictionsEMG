@@ -66,7 +66,13 @@ class SNF(SSM):
         1+m is time index + number of modalities
     metric - a function to be used in generating distance matrix SSMs
     """
-    def __init__(self, time_series, k, metric=euclidian_dist):
+    def __init__(
+        self,
+        time_series,
+        k,
+        metric=euclidian_dist,
+        autotune=True,
+        s=None):
         # inherit methods and properties from parent
         super().__init__(time_series, metric)
         self.k = k
@@ -143,7 +149,7 @@ class SNF(SSM):
         self.W_knn = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
         for m in range(self.n_mods): # loop over modalities
             for i in range(self.n_obs): # loop over rows of SSM
-                knn = np.argsort(-self.P[m,i,:])[:self.kN] # knn index nums
+                knn = np.argsort(self.P[m,i,:])[:self.kN] # knn index nums
                 for j in range(self.n_obs): # loop over columns in SSM
                     if autotune:
                         # find kN nearest neighbors of data point i
@@ -162,8 +168,8 @@ class SNF(SSM):
                                 self.mods[i, m],
                                 self.mods[j, m],
                                 metric=self.metric,
-                                inn=inn[0:self.kN], # include self
-                                jnn=jnn[0:self.kN], # include self
+                                inn=inn[1:self.kN], # exclude self
+                                jnn=jnn[1:self.kN], # exclude self
                                 b=b
                                 )
                     if j in knn:
