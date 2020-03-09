@@ -9,13 +9,26 @@ import matplotlib.pyplot as plt
 
 from ssm import SSM
 
+############# metrics and kernels #############
 
 def euclidian_dist(i, j):
     """
     euclidian distance for scalar values
     """
     # abs equivalent to ((i-j)**2)**0.5 in scalar case
-    return abs(i-j)
+    # end-of-array index included for compatibility
+    return abs(i[-1] - j[-1])
+
+
+def cumulated_euc_ts(i, j):
+    """
+    cumulated version of the time series w/ euclidean distance
+    in which we take the sum values over time as time increases
+    and then apply the chosen metric.
+    i, j - arrays of data points
+    """
+    # abs equivalent to ((i-j)**2)**0.5 in scalar case
+    return abs(i.sum() - j.sum())
 
 
 def gaussian(i, j, metric, s=1):
@@ -26,6 +39,8 @@ def gaussian(i, j, metric, s=1):
     s - variance parameter
     """
     return np.exp(-(metric(i,j)**2)/s)
+
+###############################################
 
 
 def autotune_sigma(i, j, metric, inn, jnn, b):
@@ -120,8 +135,8 @@ class SNF(SSM):
                                     b=b
                                     )
                         self.W[m, i, j] = self.kern(
-                            self.mods[i, m],
-                            self.mods[j, m],
+                            self.mods[:i, m],
+                            self.mods[:j, m],
                             metric=self.metric,
                             s=s
                             )
@@ -221,7 +236,7 @@ class SNF(SSM):
 
         self.fused_similarity_template = (
             self.P.sum(axis=0) / self.n_mods
-            ) - eta*np.eye(self.n_obs) # back out regularization constant
+            )# - m * eta*np.eye(self.n_obs) # back out regularization constant
 
 
     def plot_template(
