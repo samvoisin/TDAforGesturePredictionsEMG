@@ -85,7 +85,7 @@ class SNF(SSM):
         self,
         time_series,
         k,
-        metric=euclidian_dist,
+        metric=cumulated_euc_ts,
         autotune=True,
         s=None):
         # inherit methods and properties from parent
@@ -152,7 +152,7 @@ class SNF(SSM):
         self.P = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
         for m in range(self.n_mods): # loop over modalities
             self.P[m,:,:] = (
-                self.W[m,:,:] / self.W[m,:,:].sum(axis=1).reshape(-1,1)
+                self.W[m,:,:] / (2 * self.W[m,:,:].sum(axis=1).reshape(-1,1))
                 )
 
 
@@ -196,6 +196,7 @@ class SNF(SSM):
                             )
 
 
+
     def normalize_knn_weights(self):
         """
         normalize weight matrix associated a k-nearest neightbors graph
@@ -236,7 +237,7 @@ class SNF(SSM):
 
         self.fused_similarity_template = (
             self.P.sum(axis=0) / self.n_mods
-            )# - m * eta*np.eye(self.n_obs) # back out regularization constant
+            ) - eta*np.eye(self.n_obs) # back out regularization constant
 
 
     def plot_template(

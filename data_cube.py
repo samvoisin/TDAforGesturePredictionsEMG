@@ -104,7 +104,6 @@ class DataCube:
         self.loaded_flg = True
 
 
-
     def rms_smooth(self, N, stp):
         """
         Perform root-mean-squares smoothing on the data set
@@ -174,7 +173,7 @@ class DataCube:
                         self.max_obs = a[:, 0].size # update current max
 
 
-    def get_min_obs(self, smoothed=False):
+    def get_min_obs(self, smooth=False):
         """
         find maximum number of observations in loaded data set
         to be used for interpolation
