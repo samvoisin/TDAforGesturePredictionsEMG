@@ -179,10 +179,16 @@ class DataCube:
         to be used for interpolation
         """
         self.min_obs = np.inf
-        for s, gdict in self.data_set.items():
-            for g, a in gdict.items():
-                if self.min_obs > a[:, 0].size: # if current min > nrow
-                    self.min_obs = a[:, 0].size # update current min
+        if smooth:
+            for s, gdict in self.data_set_smooth.items():
+                for g, a in gdict.items():
+                    if self.min_obs > a[:, 0].size: # if current min > nrow
+                        self.min_obs = a[:, 0].size # update current min
+        else:
+            for s, gdict in self.data_set.items():
+                for g, a in gdict.items():
+                    if self.min_obs > a[:, 0].size: # if current min > nrow
+                        self.min_obs = a[:, 0].size # update current min
 
 
     def plot_gests(self, subj, g, chans="all", save=False, path=None):
