@@ -189,8 +189,8 @@ class SNF(SSM):
                                 )
                     if j in knn:
                         self.W_knn[m,i,j] = self.kern(
-                            self.mods[:i, m],
-                            self.mods[:j, m],
+                            self.mods[i, m],
+                            self.mods[j, m],
                             metric=self.metric,
                             s=s
                             )
@@ -204,7 +204,6 @@ class SNF(SSM):
         self.P_knn = np.zeros(shape=(self.n_mods, self.n_obs, self.n_obs))
         for m in range(self.n_mods): # loop over modalities
             for m in range(self.n_mods): # loop over modalities
-                print(self.W_knn[m,:,:].sum(axis=1).reshape(-1,1))
                 self.P_knn[m,:,:] = (
                     self.W_knn[m,:,:] /
                     self.W_knn[m,:,:].sum(axis=1).reshape(-1,1)
