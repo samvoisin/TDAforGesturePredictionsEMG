@@ -189,8 +189,8 @@ class SNF(SSM):
                                 )
                     if j in knn:
                         self.W_knn[m,i,j] = self.kern(
-                            self.mods[:i, m],
-                            self.mods[:j, m],
+                            self.mods[i, m],
+                            self.mods[j, m],
                             metric=self.metric,
                             s=s
                             )
