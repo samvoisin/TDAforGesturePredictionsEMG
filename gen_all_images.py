@@ -11,6 +11,8 @@ from math import floor
 from data_cube import DataCube
 from similarity_network_fusion import SNF, cumulated_euc_ts
 
+from PIL import Image
+
 ################################################################################
 
 def cumulated_ts_2(a1, a2):
@@ -79,6 +81,6 @@ for n, a in enumerate(arrays):
     # save template to dict
     smth_snf = gaussian_filter(snf.fused_similarity_template, sigma=1)
     fp = "./Data/"+str(gest_lab[n])+"/"+str(c)+".png"
-    plt.imshow(smth_snf)
-    plt.savefig(fp)
+    result = Image.fromarray(smth_snf)
+    result.save(fp)
     c += 1
