@@ -80,7 +80,7 @@ for n, a in enumerate(arrays):
     snf.network_fusion(eta=1, iters=20)
     # save template to dict
     smth_snf = gaussian_filter(snf.fused_similarity_template, sigma=1)
-    fp = "./Data/"+str(gest_lab[n])+"/"+str(c)+".png"
+    fp = "./Data/snf/"+str(gest_lab[n])+"/"+str(c)+".png"
     result = Image.fromarray(smth_snf)
     result.save(fp)
     c += 1
