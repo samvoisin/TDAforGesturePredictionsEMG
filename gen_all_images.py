@@ -11,7 +11,7 @@ from math import floor
 from data_cube import DataCube
 from similarity_network_fusion import SNF, cumulated_euc_ts
 
-from PIL import Image
+import imageio
 
 ################################################################################
 
@@ -72,8 +72,8 @@ c = 0
 for n, a in enumerate(raw_ssm_lst):
     smth_ssm = gaussian_filter(a, sigma=1)
     fp = "./Data/ssm/"+str(gest_lab[n])+"/"+str(c)+".png"
-    result = Image.fromarray(smth_ssm.astype(np.uint8))
-    result.save(fp)
+    #result = Image.fromarray(smth_ssm.astype(np.uint8))
+    imageio.imwrite(fp, smth_ssm)
     c += 1
 
 ##################### generate ISO images for each gesture #####################
@@ -88,13 +88,13 @@ for n, a in enumerate(arrays):
         for j in range(embed.size):
             iso_ssm_lst[n][i,j] = cumulated_ts_2(embed[i,:], embed[j,:])
 
-# smooth SSM images
+# smooth ISO SSM images
 c = 0
 for n, a in enumerate(iso_ssm_lst):
     smth_iso = gaussian_filter(a, sigma=1)
     fp = "./Data/iso/"+str(gest_lab[n])+"/"+str(c)+".png"
-    result = Image.fromarray(smth_iso.astype(np.uint8))
-    result.save(fp)
+    #result = Image.fromarray(smth_iso.astype(np.uint8))
+    imageio.imwrite(fp, smth_iso)
     c += 1
 
 ##################### generate SNF images for each gesture #####################
@@ -114,6 +114,6 @@ for n, a in enumerate(arrays):
     # save template to dict
     smth_snf = gaussian_filter(snf.fused_similarity_template, sigma=1)
     fp = "./Data/snf/"+str(gest_lab[n])+"/"+str(c)+".png"
-    result = Image.fromarray(smth_snf.astype(np.uint8))
-    result.save(fp)
+    #result = Image.fromarray(smth_snf.astype(np.uint8))
+    imageio.imwrite(fp, smth_snf)
     c += 1
