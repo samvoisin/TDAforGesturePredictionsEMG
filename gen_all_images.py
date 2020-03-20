@@ -72,7 +72,7 @@ c = 0
 for n, a in enumerate(raw_ssm_lst):
     smth_ssm = gaussian_filter(a, sigma=1)
     fp = "./Data/ssm/"+str(gest_lab[n])+"/"+str(c)+".png"
-    result = Image.fromarray(smth_ssm.astype(np.uint8)
+    result = Image.fromarray(smth_ssm.astype(np.uint8))
     result.save(fp)
     c += 1
 
