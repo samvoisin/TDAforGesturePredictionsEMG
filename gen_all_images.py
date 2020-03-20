@@ -54,15 +54,48 @@ for s, gdict in dc.data_set_smooth.items():
         arrays.append(a[:, 1:-1])
 
 
-# set to array and base at shift gestures down by 3 (i.e. to 0,1,2,3 instead of 3,4,5,6) for keras
+# set to array and base at shift gestures down by 3
+# (i.e. to 0,1,2,3 instead of 3,4,5,6) for keras
 gest_lab = np.array(gest_lab) - 3
 
 
 ##################### generate SSM images for each gesture #####################
 
+raw_ssm_lst = [np.zeros(shape=(a.shape[0], a.shape[0])) for a in arrays]
+for n, a in enumerate(arrays):
+    for i in range(a.shape[0]):
+        for j in range(a.shape[0]):
+            raw_ssm_lst[n][i,j] = cumulated_ts_2(a[i,:],a[j,:])
+
+# smooth SSM images
+c = 0
+for n, a in enumerate(raw_ssm_lst):
+    smth_ssm = gaussian_filter(a, sigma=1)
+    fp = "./Data/ssm/"+str(gest_lab[n])+"/"+str(c)+".png"
+    result = Image.fromarray(smth_ssm.astype(np.uint8)
+    result.save(fp)
+    c += 1
 
 ##################### generate ISO images for each gesture #####################
 
+# initialize embedding
+iso = Isomap(n_neighbors=3, n_components=1)
+
+iso_ssm_lst = [np.zeros(shape=(a.shape[0], a.shape[0])) for a in arrays]
+for n, a in enumerate(arrays):
+    embed = iso.fit_transform(a)
+    for i in range(embed.size):
+        for j in range(embed.size):
+            iso_ssm_lst[n][i,j] = cumulated_ts_2(embed[i,:], embed[j,:])
+
+# smooth SSM images
+c = 0
+for n, a in enumerate(iso_ssm_lst):
+    smth_iso = gaussian_filter(a, sigma=1)
+    fp = "./Data/iso/"+str(gest_lab[n])+"/"+str(c)+".png"
+    result = Image.fromarray(smth_iso.astype(np.uint8))
+    result.save(fp)
+    c += 1
 
 ##################### generate SNF images for each gesture #####################
 
@@ -81,6 +114,6 @@ for n, a in enumerate(arrays):
     # save template to dict
     smth_snf = gaussian_filter(snf.fused_similarity_template, sigma=1)
     fp = "./Data/snf/"+str(gest_lab[n])+"/"+str(c)+".png"
-    result = Image.fromarray(smth_snf)
+    result = Image.fromarray(smth_snf.astype(np.uint8))
     result.save(fp)
     c += 1
