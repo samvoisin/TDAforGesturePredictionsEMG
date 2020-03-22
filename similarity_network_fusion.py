@@ -134,7 +134,7 @@ class SNF(SSM):
                                     jnn=jnn[0:self.kN], # include self
                                     b=b
                                     )
-                        self.W[m, i, j] = self.kern(
+                        self.W[m,i,j] = self.kern(
                             self.mods[:i, m],
                             self.mods[:j, m],
                             metric=self.metric,
@@ -194,7 +194,6 @@ class SNF(SSM):
                             metric=self.metric,
                             s=s
                             )
-
 
 
     def normalize_knn_weights(self):
