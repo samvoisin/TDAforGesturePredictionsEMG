@@ -4,7 +4,7 @@
 ################################################################################
 
 import numpy as np
-from numpy import linalg as la
+from scipy import linalg as la
 import matplotlib.pyplot as plt
 
 from ssm import SSM

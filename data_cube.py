@@ -7,6 +7,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import scale
+from scipy.interpolate import CubicSpline
 
 
 def root_mean_sq(a):
@@ -153,6 +154,27 @@ class DataCube:
             self.data_set_smooth = set
         else:
             self.data_set = set
+
+
+    def interpolate_modalities(self, intrvl=1):
+        """
+        interpolate modalities in `data_set_smooth` with
+        scipy.interpolate.CubicSpline
+        """
+        self.data_set_interp = {} # initialize empty data set attribute
+        for subj, gdict in self.data_set_smooth.items():
+            self.data_set_interp[subj] = {}
+            for g, a in gdict.items(): # for each array in the gesture g
+                tidx = a[:,0]
+                beg,end = tidx[0],tidx[-1]
+                new_tidx = np.arange(beg,end,intrvl)
+                self.data_set_interp[subj][g] = np.zeros(
+                    shape=(new_tidx.size,len(self.channels)+1)
+                    )
+                self.data_set_interp[subj][g][:,0] = new_tidx
+                for i,c in enumerate(self.channels):
+                    f = CubicSpline(tidx, a[:,i+1])
+                    self.data_set_interp[subj][g][:,i+1] = f(new_tidx)
 
 
     def get_max_obs(self, smooth=False):
